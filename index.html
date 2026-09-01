@@ -1,937 +1,1464 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
 
 <title>BIET CSE Department Dashboard</title>
 
-<!-- Excel Reader -->
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
-<!-- Charts -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
 
 <style>
 
 :root{
-    --navy:#12355b;
-    --blue:#1e6bb8;
-    --sky:#eaf4ff;
-    --green:#15946a;
-    --orange:#ef9b2d;
-    --red:#d9534f;
-    --text:#172033;
-    --muted:#667085;
-    --card:#ffffff;
-    --bg:#f4f7fb;
+--navy:#12355b;
+--blue:#1e6bb8;
+--light:#eaf4ff;
+--green:#15946a;
+--orange:#ef9b2d;
+--red:#d9534f;
+--text:#172033;
+--muted:#667085;
+--bg:#f4f7fb;
+--white:#ffffff;
 }
 
 *{
-    box-sizing:border-box;
+box-sizing:border-box;
 }
 
 body{
-    margin:0;
-    font-family:"Segoe UI",Arial,sans-serif;
-    background:var(--bg);
-    color:var(--text);
+margin:0;
+font-family:"Segoe UI",Arial,sans-serif;
+background:var(--bg);
+color:var(--text);
 }
 
 /* HEADER */
 
 header{
-    background:linear-gradient(135deg,#0d2946,#1e6bb8);
-    color:white;
-    padding:22px 28px;
-    display:flex;
-    justify-content:space-between;
-    gap:20px;
-    align-items:center;
+background:linear-gradient(135deg,#0d2946,#1e6bb8);
+color:white;
+padding:22px 28px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+gap:20px;
 }
 
 header h1{
-    margin:0;
-    font-size:25px;
+margin:0;
+font-size:25px;
 }
 
 header p{
-    margin:6px 0 0;
-    opacity:.9;
+margin:6px 0 0;
+opacity:.9;
 }
 
 .actions{
-    display:flex;
-    gap:10px;
-    align-items:center;
-    flex-wrap:wrap;
+display:flex;
+gap:10px;
+flex-wrap:wrap;
 }
 
 button,
 .file-label{
-    border:0;
-    border-radius:8px;
-    padding:10px 14px;
-    font-weight:600;
-    cursor:pointer;
-    background:#fff;
-    color:var(--navy);
+border:0;
+border-radius:8px;
+padding:10px 14px;
+font-weight:600;
+cursor:pointer;
+background:white;
+color:var(--navy);
 }
 
 button:hover,
 .file-label:hover{
-    opacity:.9;
+opacity:.9;
 }
 
 .file-label input{
-    display:none;
+display:none;
 }
 
-/* MAIN */
+/* CONTAINER */
 
 .container{
-    max-width:1450px;
-    margin:auto;
-    padding:20px;
+max-width:1500px;
+margin:auto;
+padding:20px;
 }
 
 /* NAVIGATION */
 
 .nav{
-    display:flex;
-    gap:8px;
-    overflow:auto;
-    margin-bottom:18px;
+display:flex;
+gap:8px;
+overflow:auto;
+margin-bottom:18px;
 }
 
 .nav button{
-    background:#e7eef7;
-    color:var(--navy);
-    white-space:nowrap;
+background:#e7eef7;
+color:var(--navy);
+white-space:nowrap;
 }
 
 .nav button.active{
-    background:var(--navy);
-    color:#fff;
+background:var(--navy);
+color:white;
 }
 
 /* SECTIONS */
 
 .section{
-    display:none;
+display:none;
 }
 
 .section.active{
-    display:block;
+display:block;
 }
 
+/* TITLE */
+
 .section-title{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    margin:8px 0 14px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin:8px 0 14px;
 }
 
 .section-title h2{
-    margin:0;
-    font-size:20px;
+margin:0;
+font-size:20px;
 }
 
 /* KPI */
 
 .kpis{
-    display:grid;
-    grid-template-columns:
-    repeat(auto-fit,minmax(180px,1fr));
-    gap:14px;
+display:grid;
+grid-template-columns:
+repeat(auto-fit,minmax(180px,1fr));
+gap:14px;
 }
 
 .kpi{
-    background:var(--card);
-    padding:18px;
-    border-radius:14px;
-    box-shadow:0 3px 15px #15223812;
-    border-left:5px solid var(--blue);
+background:white;
+padding:18px;
+border-radius:14px;
+box-shadow:0 3px 15px #15223812;
+border-left:5px solid var(--blue);
 }
 
 .kpi .label{
-    font-size:13px;
-    color:var(--muted);
+font-size:13px;
+color:var(--muted);
 }
 
 .kpi .value{
-    font-size:30px;
-    font-weight:750;
-    margin:6px 0;
+font-size:30px;
+font-weight:750;
+margin:6px 0;
 }
 
 .kpi small{
-    color:var(--muted);
+color:var(--muted);
 }
 
 /* GRID */
 
 .grid2{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:16px;
-    margin-top:16px;
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:16px;
+margin-top:16px;
 }
 
-/* CARDS */
+/* CARD */
 
 .card{
-    background:#fff;
-    border-radius:14px;
-    padding:18px;
-    box-shadow:0 3px 15px #15223812;
+background:white;
+border-radius:14px;
+padding:18px;
+box-shadow:0 3px 15px #15223812;
 }
 
 .card h3{
-    margin:0 0 12px;
+margin:0 0 14px;
 }
 
 /* CHART */
 
 .chartbox{
-    height:310px;
+height:310px;
 }
 
-.chartbox canvas{
-    max-height:290px;
+/* FILTERS */
+
+.filters{
+background:white;
+padding:16px;
+border-radius:14px;
+box-shadow:0 3px 15px #15223812;
+margin-bottom:16px;
+
+display:grid;
+
+grid-template-columns:
+repeat(auto-fit,minmax(170px,1fr));
+
+gap:12px;
+}
+
+.filters input,
+.filters select{
+width:100%;
+padding:10px;
+border:1px solid #d8dee8;
+border-radius:8px;
+font-size:14px;
+background:white;
+}
+
+.filters label{
+font-size:12px;
+font-weight:600;
+color:var(--muted);
+display:block;
+margin-bottom:5px;
 }
 
 /* TABLE */
 
 .table-wrap{
-    overflow:auto;
-    background:#fff;
-    border-radius:14px;
-    box-shadow:0 3px 15px #15223812;
+overflow:auto;
+background:white;
+border-radius:14px;
+box-shadow:0 3px 15px #15223812;
 }
 
-.table-wrap table{
-    width:100%;
-    border-collapse:collapse;
-    min-width:760px;
+table{
+width:100%;
+border-collapse:collapse;
+min-width:800px;
 }
 
 th,
 td{
-    padding:10px 12px;
-    border-bottom:1px solid #edf0f5;
-    text-align:left;
-    font-size:13px;
+padding:10px 12px;
+border-bottom:1px solid #edf0f5;
+text-align:left;
+font-size:13px;
 }
 
 th{
-    background:#eef5fc;
-    color:var(--navy);
-    position:sticky;
-    top:0;
+background:#eef5fc;
+color:var(--navy);
+position:sticky;
+top:0;
+z-index:2;
 }
 
 /* NOTICE */
 
 .notice{
-    background:#fff8e8;
-    border-left:4px solid var(--orange);
-    padding:12px;
-    border-radius:8px;
-    color:#6b4b11;
+background:#fff8e8;
+border-left:4px solid var(--orange);
+padding:12px;
+border-radius:8px;
+color:#6b4b11;
 }
 
 /* STATUS */
 
 .status{
-    margin-top:12px;
-    padding:10px 14px;
-    border-radius:8px;
-    background:#eaf4ff;
-    color:var(--navy);
-    font-size:14px;
+margin-top:10px;
+padding:8px 12px;
+border-radius:8px;
+background:#eaf4ff;
+color:var(--navy);
+font-size:13px;
+display:inline-block;
+}
+
+/* BUTTONS */
+
+.action-buttons{
+display:flex;
+gap:10px;
+flex-wrap:wrap;
+margin-bottom:15px;
+}
+
+.btn-blue{
+background:var(--blue);
+color:white;
+}
+
+.btn-green{
+background:var(--green);
+color:white;
 }
 
 /* FOOTER */
 
 .footer{
-    text-align:center;
-    color:var(--muted);
-    padding:25px;
+text-align:center;
+color:var(--muted);
+padding:25px;
 }
 
 /* MOBILE */
 
 @media(max-width:800px){
 
-    header{
-        flex-direction:column;
-        align-items:flex-start;
-    }
+header{
+flex-direction:column;
+align-items:flex-start;
+}
 
-    .grid2{
-        grid-template-columns:1fr;
-    }
+.grid2{
+grid-template-columns:1fr;
+}
 
-    .container{
-        padding:12px;
-    }
+.container{
+padding:12px;
+}
+
+header h1{
+font-size:20px;
+}
+
+}
+
+/* PRINT */
+
+@media print{
+
+header{
+color:black;
+background:white;
+}
+
+.actions,
+.nav,
+.filters,
+.action-buttons{
+display:none !important;
+}
+
+.section{
+display:block !important;
+}
+
+.card,
+.kpi,
+.table-wrap{
+box-shadow:none;
+}
+
+body{
+background:white;
+}
 
 }
 
 </style>
+
 </head>
 
 <body>
+
 
 <!-- HEADER -->
 
 <header>
 
-    <div>
+<div>
 
-        <h1 id="deptName">
-            BIET – Department of Computer Science & Engineering
-        </h1>
+<h1 id="deptName">
+BIET – Department of Computer Science & Engineering
+</h1>
 
-        <p id="headerInfo">
-            Academic Year 2026–27 |
-            HOD:
-            <span id="hodName">
-                Update in Excel
-            </span>
-        </p>
+<p id="headerInfo">
+Academic Year 2026–27 |
+HOD:
+<span id="hodName">
+Update in Excel
+</span>
+</p>
 
-        <div class="status" id="excelStatus">
-            Loading Excel data...
-        </div>
+<div
+class="status"
+id="excelStatus">
 
-    </div>
+⏳ Loading Excel data...
 
-    <div class="actions">
+</div>
 
-        <button onclick="loadExcelFromGitHub()">
-            📊 Refresh Excel Data
-        </button>
+</div>
 
-        <label class="file-label">
 
-            📁 Load Local Excel
+<div class="actions">
 
-            <input
-                id="excelFile"
-                type="file"
-                accept=".xlsx,.xls"
-            >
+<button onclick="loadExcelFromGitHub()">
+🔄 Refresh Data
+</button>
 
-        </label>
+<label class="file-label">
 
-    </div>
+📁 Load Excel
+
+<input
+id="excelFile"
+type="file"
+accept=".xlsx,.xls">
+
+</label>
+
+<button onclick="window.print()">
+🖨 Print
+</button>
+
+</div>
 
 </header>
 
 
 <div class="container">
 
+
 <!-- NAVIGATION -->
 
 <div class="nav">
 
-    <button class="active" data-target="overview">
-        Overview
-    </button>
+<button
+class="active"
+data-target="overview">
 
-    <button data-target="students">
-        Students
-    </button>
+Overview
 
-    <button data-target="faculty">
-        Faculty
-    </button>
+</button>
 
-    <button data-target="academics">
-        Academics
-    </button>
+<button data-target="students">
 
-    <button data-target="placement">
-        Placement & Training
-    </button>
+Students
 
-    <button data-target="activities">
-        Activities
-    </button>
+</button>
 
-    <button data-target="data">
-        Excel Data
-    </button>
+<button data-target="faculty">
+
+Faculty
+
+</button>
+
+<button data-target="academics">
+
+Academics
+
+</button>
+
+<button data-target="placement">
+
+Placement & Training
+
+</button>
+
+<button data-target="activities">
+
+Activities
+
+</button>
+
+<button data-target="data">
+
+Excel Data
+
+</button>
 
 </div>
 
 
-<!-- OVERVIEW -->
+<!-- ================= OVERVIEW ================= -->
 
-<section id="overview" class="section active">
+<section
+id="overview"
+class="section active">
 
-    <div class="section-title">
-        <h2>Department Overview</h2>
-    </div>
+<div class="section-title">
 
+<h2>
+Department Overview
+</h2>
 
-    <div class="kpis">
-
-        <div class="kpi">
-            <div class="label">Total Students</div>
-            <div class="value" id="kStudents">0</div>
-            <small>All years</small>
-        </div>
-
-        <div class="kpi">
-            <div class="label">Total Faculty</div>
-            <div class="value" id="kFaculty">0</div>
-            <small>Teaching staff</small>
-        </div>
-
-        <div class="kpi">
-            <div class="label">Average Attendance</div>
-            <div class="value" id="kAttendance">0%</div>
-            <small>Current academic year</small>
-        </div>
-
-        <div class="kpi">
-            <div class="label">Pass Percentage</div>
-            <div class="value" id="kPass">0%</div>
-            <small>Latest available results</small>
-        </div>
-
-        <div class="kpi">
-            <div class="label">Placement</div>
-            <div class="value" id="kPlacement">0%</div>
-            <small>Eligible students</small>
-        </div>
-
-        <div class="kpi">
-            <div class="label">Projects</div>
-            <div class="value" id="kProjects">0</div>
-            <small>Student projects</small>
-        </div>
-
-    </div>
+</div>
 
 
-    <div class="grid2">
-
-        <div class="card">
-
-            <h3>
-                Year-wise Student Strength
-            </h3>
-
-            <div class="chartbox">
-                <canvas id="yearChart"></canvas>
-            </div>
-
-        </div>
+<div class="kpis">
 
 
-        <div class="card">
+<div class="kpi">
 
-            <h3>
-                Department Performance
-            </h3>
+<div class="label">
+Total Students
+</div>
 
-            <div class="chartbox">
-                <canvas id="perfChart"></canvas>
-            </div>
+<div
+class="value"
+id="kStudents">
+0
+</div>
 
-        </div>
+<small>
+All years
+</small>
 
-    </div>
+</div>
+
+
+<div class="kpi">
+
+<div class="label">
+Total Faculty
+</div>
+
+<div
+class="value"
+id="kFaculty">
+0
+</div>
+
+<small>
+Teaching staff
+</small>
+
+</div>
+
+
+<div class="kpi">
+
+<div class="label">
+Average Attendance
+</div>
+
+<div
+class="value"
+id="kAttendance">
+0%
+</div>
+
+<small>
+Current academic year
+</small>
+
+</div>
+
+
+<div class="kpi">
+
+<div class="label">
+Pass Percentage
+</div>
+
+<div
+class="value"
+id="kPass">
+0%
+</div>
+
+<small>
+Latest results
+</small>
+
+</div>
+
+
+<div class="kpi">
+
+<div class="label">
+Placement
+</div>
+
+<div
+class="value"
+id="kPlacement">
+0%
+</div>
+
+<small>
+Students placed
+</small>
+
+</div>
+
+
+<div class="kpi">
+
+<div class="label">
+Projects
+</div>
+
+<div
+class="value"
+id="kProjects">
+0
+</div>
+
+<small>
+Student projects
+</small>
+
+</div>
+
+</div>
+
+
+<div class="grid2">
+
+
+<div class="card">
+
+<h3>
+Year-wise Student Strength
+</h3>
+
+<div class="chartbox">
+
+<canvas id="yearChart"></canvas>
+
+</div>
+
+</div>
+
+
+<div class="card">
+
+<h3>
+Department Performance
+</h3>
+
+<div class="chartbox">
+
+<canvas id="perfChart"></canvas>
+
+</div>
+
+</div>
+
+
+</div>
 
 </section>
 
 
-<!-- STUDENTS -->
+<!-- ================= STUDENTS ================= -->
 
-<section id="students" class="section">
+<section
+id="students"
+class="section">
 
-    <div class="section-title">
-        <h2>Student Statistics</h2>
-    </div>
+<div class="section-title">
 
+<h2>
+Student Statistics
+</h2>
 
-    <div class="kpis">
-
-        <div class="kpi">
-            <div class="label">Total Students</div>
-            <div class="value" id="sTotal">0</div>
-        </div>
-
-        <div class="kpi">
-            <div class="label">1st Year</div>
-            <div class="value" id="s1">0</div>
-        </div>
-
-        <div class="kpi">
-            <div class="label">2nd Year</div>
-            <div class="value" id="s2">0</div>
-        </div>
-
-        <div class="kpi">
-            <div class="label">3rd Year</div>
-            <div class="value" id="s3">0</div>
-        </div>
-
-        <div class="kpi">
-            <div class="label">4th Year</div>
-            <div class="value" id="s4">0</div>
-        </div>
-
-    </div>
+</div>
 
 
-    <div class="grid2">
-
-        <div class="card">
-
-            <h3>
-                Attendance & Results
-            </h3>
-
-            <div class="chartbox">
-
-                <canvas id="studentChart"></canvas>
-
-            </div>
-
-        </div>
+<div class="kpis">
 
 
-        <div class="card">
+<div class="kpi">
 
-            <h3>
-                Student Information
-            </h3>
+<div class="label">
+Total Students
+</div>
 
-            <div class="notice">
+<div
+class="value"
+id="sTotal">
+0
+</div>
 
-                Update the
-                <b>Students</b>
-                and
-                <b>Attendance</b>
-                sheets in Excel.
+</div>
 
-                <br><br>
 
-                Then upload the updated Excel file to GitHub.
+<div class="kpi">
 
-            </div>
+<div class="label">
+1st Year
+</div>
 
-        </div>
+<div
+class="value"
+id="s1">
+0
+</div>
 
-    </div>
+</div>
+
+
+<div class="kpi">
+
+<div class="label">
+2nd Year
+</div>
+
+<div
+class="value"
+id="s2">
+0
+</div>
+
+</div>
+
+
+<div class="kpi">
+
+<div class="label">
+3rd Year
+</div>
+
+<div
+class="value"
+id="s3">
+0
+</div>
+
+</div>
+
+
+<div class="kpi">
+
+<div class="label">
+4th Year
+</div>
+
+<div
+class="value"
+id="s4">
+0
+</div>
+
+</div>
+
+</div>
+
+
+<br>
+
+
+<!-- STUDENT FILTERS -->
+
+<div class="filters">
+
+
+<div>
+
+<label>
+Search USN / Name
+</label>
+
+<input
+id="studentSearch"
+type="text"
+placeholder="Enter USN or Name"
+oninput="filterStudents()">
+
+</div>
+
+
+<div>
+
+<label>
+Semester
+</label>
+
+<select
+id="semesterFilter"
+onchange="filterStudents()">
+
+<option value="">
+All Semesters
+</option>
+
+<option value="1">
+Semester 1
+</option>
+
+<option value="2">
+Semester 2
+</option>
+
+<option value="3">
+Semester 3
+</option>
+
+<option value="4">
+Semester 4
+</option>
+
+<option value="5">
+Semester 5
+</option>
+
+<option value="6">
+Semester 6
+</option>
+
+<option value="7">
+Semester 7
+</option>
+
+<option value="8">
+Semester 8
+</option>
+
+</select>
+
+</div>
+
+
+<div>
+
+<label>
+Section
+</label>
+
+<select
+id="sectionFilter"
+onchange="filterStudents()">
+
+<option value="">
+All Sections
+</option>
+
+</select>
+
+</div>
+
+
+<div>
+
+<label>
+Gender
+</label>
+
+<select
+id="genderFilter"
+onchange="filterStudents()">
+
+<option value="">
+All
+</option>
+
+</select>
+
+</div>
+
+
+<div>
+
+<label>
+Category
+</label>
+
+<select
+id="categoryFilter"
+onchange="filterStudents()">
+
+<option value="">
+All Categories
+</option>
+
+</select>
+
+</div>
+
+</div>
+
+
+<div class="action-buttons">
+
+<button
+class="btn-blue"
+onclick="filterStudents()">
+
+🔎 Search
+
+</button>
+
+<button
+class="btn-green"
+onclick="clearStudentFilters()">
+
+↺ Clear Filters
+
+</button>
+
+</div>
+
+
+<div class="card">
+
+<h3>
+Student Details
+</h3>
+
+<p id="studentCount">
+Showing 0 students
+</p>
+
+<div
+class="table-wrap"
+id="studentTable">
+
+No student data available.
+
+</div>
+
+</div>
+
+
+<div class="grid2">
+
+
+<div class="card">
+
+<h3>
+Attendance & Results
+</h3>
+
+<div class="chartbox">
+
+<canvas id="studentChart"></canvas>
+
+</div>
+
+</div>
+
+
+<div class="card">
+
+<h3>
+Student Information
+</h3>
+
+<div class="notice">
+
+Student data is loaded directly
+from the Excel workbook.
+
+<br><br>
+
+Update your Excel file and
+upload the new version to GitHub.
+
+</div>
+
+</div>
+
+</div>
 
 </section>
 
 
-<!-- FACULTY -->
+<!-- ================= FACULTY ================= -->
 
-<section id="faculty" class="section">
+<section
+id="faculty"
+class="section">
 
-    <div class="section-title">
+<div class="section-title">
 
-        <h2>
-            Faculty Information
-        </h2>
+<h2>
+Faculty Information
+</h2>
 
-    </div>
-
-
-    <div class="kpis">
-
-        <div class="kpi">
-
-            <div class="label">
-                Total Faculty
-            </div>
-
-            <div class="value" id="fTotal">
-                0
-            </div>
-
-        </div>
+</div>
 
 
-        <div class="kpi">
-
-            <div class="label">
-                Publications
-            </div>
-
-            <div class="value" id="fPub">
-                0
-            </div>
-
-        </div>
+<div class="kpis">
 
 
-        <div class="kpi">
+<div class="kpi">
 
-            <div class="label">
-                FDP / Workshops
-            </div>
+<div class="label">
+Total Faculty
+</div>
 
-            <div class="value" id="fFdp">
-                0
-            </div>
+<div
+class="value"
+id="fTotal">
+0
+</div>
 
-        </div>
-
-    </div>
-
-
-    <div class="grid2">
-
-        <div class="card">
-
-            <h3>
-                Designation-wise Faculty
-            </h3>
-
-            <div class="chartbox">
-
-                <canvas id="designationChart"></canvas>
-
-            </div>
-
-        </div>
+</div>
 
 
-        <div class="card">
+<div class="kpi">
 
-            <h3>
-                Faculty Workload
-            </h3>
+<div class="label">
+Publications
+</div>
 
-            <div class="chartbox">
+<div
+class="value"
+id="fPub">
+0
+</div>
 
-                <canvas id="workloadChart"></canvas>
-
-            </div>
-
-        </div>
-
-    </div>
-
-</section>
+</div>
 
 
-<!-- ACADEMICS -->
+<div class="kpi">
 
-<section id="academics" class="section">
+<div class="label">
+FDP / Workshops
+</div>
 
-    <div class="section-title">
+<div
+class="value"
+id="fFdp">
+0
+</div>
 
-        <h2>
-            Academic Information
-        </h2>
+</div>
 
-    </div>
-
-
-    <div class="grid2">
-
-        <div class="card">
-
-            <h3>
-                Courses Offered
-            </h3>
-
-            <div
-                id="courseCount"
-                class="value"
-                style="font-size:34px;font-weight:750"
-            >
-                0
-            </div>
-
-            <p>
-                Courses listed in the Courses sheet.
-            </p>
-
-        </div>
+</div>
 
 
-        <div class="card">
-
-            <h3>
-                Academic Calendar
-            </h3>
-
-            <div id="calendarList">
-                Load Excel to view events.
-            </div>
-
-        </div>
-
-    </div>
+<div class="grid2">
 
 
-    <div class="card" style="margin-top:16px">
+<div class="card">
 
-        <h3>
-            Timetable
-        </h3>
+<h3>
+Designation-wise Faculty
+</h3>
 
-        <div id="timetableTable">
-            Load Excel to view timetable.
-        </div>
+<div class="chartbox">
 
-    </div>
+<canvas
+id="designationChart">
+</canvas>
+
+</div>
+
+</div>
+
+
+<div class="card">
+
+<h3>
+Faculty Workload
+</h3>
+
+<div class="chartbox">
+
+<canvas
+id="workloadChart">
+</canvas>
+
+</div>
+
+</div>
+
+</div>
+
+
+<div
+class="card"
+style="margin-top:16px">
+
+<h3>
+Faculty Details
+</h3>
+
+<div
+id="facultyTable">
+
+No faculty data available.
+
+</div>
+
+</div>
 
 </section>
 
 
-<!-- PLACEMENT -->
+<!-- ================= ACADEMICS ================= -->
 
-<section id="placement" class="section">
+<section
+id="academics"
+class="section">
 
-    <div class="section-title">
+<div class="section-title">
 
-        <h2>
-            Placement & Training
-        </h2>
+<h2>
+Academic Information
+</h2>
 
-    </div>
-
-
-    <div class="kpis">
-
-        <div class="kpi">
-
-            <div class="label">
-                Students Placed
-            </div>
-
-            <div class="value" id="pPlaced">
-                0
-            </div>
-
-        </div>
+</div>
 
 
-        <div class="kpi">
-
-            <div class="label">
-                Companies
-            </div>
-
-            <div class="value" id="pCompanies">
-                0
-            </div>
-
-        </div>
+<div class="grid2">
 
 
-        <div class="kpi">
+<div class="card">
 
-            <div class="label">
-                Highest Package
-            </div>
+<h3>
+Courses Offered
+</h3>
 
-            <div class="value" id="pHighest">
-                —
-            </div>
+<div
+id="courseCount"
+style="font-size:34px;font-weight:750">
 
-        </div>
+0
 
+</div>
 
-        <div class="kpi">
+<p>
+Courses listed in Excel.
+</p>
 
-            <div class="label">
-                Average Package
-            </div>
-
-            <div class="value" id="pAverage">
-                —
-            </div>
-
-        </div>
+</div>
 
 
-        <div class="kpi">
+<div class="card">
 
-            <div class="label">
-                Internships
-            </div>
+<h3>
+Academic Calendar
+</h3>
 
-            <div class="value" id="pIntern">
-                0
-            </div>
+<div id="calendarList">
 
-        </div>
+No calendar data available.
 
-    </div>
+</div>
 
+</div>
 
-    <div class="grid2">
-
-        <div class="card">
-
-            <h3>
-                Package Distribution
-            </h3>
-
-            <div class="chartbox">
-
-                <canvas id="packageChart"></canvas>
-
-            </div>
-
-        </div>
+</div>
 
 
-        <div class="card">
+<div
+class="card"
+style="margin-top:16px">
 
-            <h3>
-                Training Programs
-            </h3>
+<h3>
+Timetable
+</h3>
 
-            <div id="trainingList">
-                Load Excel to view training data.
-            </div>
+<div id="timetableTable">
 
-        </div>
+No timetable data available.
 
-    </div>
+</div>
+
+</div>
 
 </section>
 
 
-<!-- ACTIVITIES -->
+<!-- ================= PLACEMENT ================= -->
 
-<section id="activities" class="section">
+<section
+id="placement"
+class="section">
 
-    <div class="section-title">
+<div class="section-title">
 
-        <h2>
-            Department Activities & Achievements
-        </h2>
+<h2>
+Placement & Training
+</h2>
 
-    </div>
-
-
-    <div class="kpis">
-
-        <div class="kpi">
-
-            <div class="label">
-                Activities
-            </div>
-
-            <div class="value" id="aActivities">
-                0
-            </div>
-
-        </div>
+</div>
 
 
-        <div class="kpi">
-
-            <div class="label">
-                Projects
-            </div>
-
-            <div class="value" id="aProjects">
-                0
-            </div>
-
-        </div>
+<div class="kpis">
 
 
-        <div class="kpi">
+<div class="kpi">
 
-            <div class="label">
-                Achievements
-            </div>
+<div class="label">
+Students Placed
+</div>
 
-            <div class="value" id="aAchievements">
-                0
-            </div>
+<div
+class="value"
+id="pPlaced">
+0
+</div>
 
-        </div>
-
-    </div>
-
-
-    <div class="grid2">
-
-        <div class="card">
-
-            <h3>
-                Activity Types
-            </h3>
-
-            <div class="chartbox">
-
-                <canvas id="activityChart"></canvas>
-
-            </div>
-
-        </div>
+</div>
 
 
-        <div class="card">
+<div class="kpi">
 
-            <h3>
-                Recent Achievements
-            </h3>
+<div class="label">
+Companies
+</div>
 
-            <div id="achievementList">
-                Load Excel to view achievements.
-            </div>
+<div
+class="value"
+id="pCompanies">
+0
+</div>
 
-        </div>
+</div>
 
-    </div>
+
+<div class="kpi">
+
+<div class="label">
+Highest Package
+</div>
+
+<div
+class="value"
+id="pHighest">
+—
+</div>
+
+</div>
+
+
+<div class="kpi">
+
+<div class="label">
+Average Package
+</div>
+
+<div
+class="value"
+id="pAverage">
+—
+</div>
+
+</div>
+
+
+<div class="kpi">
+
+<div class="label">
+Internships
+</div>
+
+<div
+class="value"
+id="pIntern">
+0
+</div>
+
+</div>
+
+</div>
+
+
+<div class="grid2">
+
+
+<div class="card">
+
+<h3>
+Package Distribution
+</h3>
+
+<div class="chartbox">
+
+<canvas
+id="packageChart">
+</canvas>
+
+</div>
+
+</div>
+
+
+<div class="card">
+
+<h3>
+Training Programs
+</h3>
+
+<div id="trainingList">
+
+No training data available.
+
+</div>
+
+</div>
+
+</div>
 
 </section>
 
 
-<!-- EXCEL DATA -->
+<!-- ================= ACTIVITIES ================= -->
 
-<section id="data" class="section">
+<section
+id="activities"
+class="section">
 
-    <div class="section-title">
+<div class="section-title">
 
-        <h2>
-            Excel Data Preview
-        </h2>
+<h2>
+Activities & Achievements
+</h2>
 
-    </div>
+</div>
 
 
-    <div class="table-wrap">
+<div class="kpis">
 
-        <div
-            id="dataPreview"
-            style="padding:18px"
-        >
 
-            Excel data will appear here.
+<div class="kpi">
 
-        </div>
+<div class="label">
+Activities
+</div>
 
-    </div>
+<div
+class="value"
+id="aActivities">
+0
+</div>
+
+</div>
+
+
+<div class="kpi">
+
+<div class="label">
+Projects
+</div>
+
+<div
+class="value"
+id="aProjects">
+0
+</div>
+
+</div>
+
+
+<div class="kpi">
+
+<div class="label">
+Achievements
+</div>
+
+<div
+class="value"
+id="aAchievements">
+0
+</div>
+
+</div>
+
+</div>
+
+
+<div class="grid2">
+
+
+<div class="card">
+
+<h3>
+Activity Types
+</h3>
+
+<div class="chartbox">
+
+<canvas
+id="activityChart">
+</canvas>
+
+</div>
+
+</div>
+
+
+<div class="card">
+
+<h3>
+Recent Achievements
+</h3>
+
+<div id="achievementList">
+
+No achievement data available.
+
+</div>
+
+</div>
+
+</div>
 
 </section>
+
+
+<!-- ================= DATA ================= -->
+
+<section
+id="data"
+class="section">
+
+<div class="section-title">
+
+<h2>
+Excel Data Preview
+</h2>
+
+</div>
+
+
+<div
+class="card">
+
+<div
+id="sheetButtons"
+class="action-buttons">
+</div>
+
+</div>
+
+
+<div
+class="table-wrap"
+style="margin-top:15px">
+
+<div
+id="dataPreview"
+style="padding:18px">
+
+Select a sheet to view data.
+
+</div>
+
+</div>
+
+</section>
+
 
 </div>
 
 
 <div class="footer">
 
-    BIET CSE Department Dashboard
-    • HTML + CSS + JavaScript + Excel Backend
+BIET CSE Department Dashboard
+<br>
+
+HTML + CSS + JavaScript + Excel Backend
 
 </div>
 
@@ -939,17 +1466,14 @@ th{
 <script>
 
 /* =====================================================
-   GLOBAL DATA
+   GLOBAL VARIABLES
 ===================================================== */
 
 let DATA = {};
 
 let charts = {};
 
-
-/* =====================================================
-   EXCEL FILE NAME
-===================================================== */
+let filteredStudents = [];
 
 const EXCEL_FILE = "BIET_CSE_Data.xlsx";
 
@@ -960,178 +1484,187 @@ const EXCEL_FILE = "BIET_CSE_Data.xlsx";
 
 document
 .querySelectorAll(".nav button")
-.forEach(btn => {
+.forEach(button => {
 
-    btn.addEventListener("click", () => {
+button.addEventListener(
+"click",
+function(){
 
-        document
-        .querySelectorAll(".nav button")
-        .forEach(b =>
-            b.classList.remove("active")
-        );
+document
+.querySelectorAll(".nav button")
+.forEach(b =>
+b.classList.remove("active")
+);
 
-        document
-        .querySelectorAll(".section")
-        .forEach(s =>
-            s.classList.remove("active")
-        );
+document
+.querySelectorAll(".section")
+.forEach(s =>
+s.classList.remove("active")
+);
 
-        btn.classList.add("active");
+this.classList.add("active");
 
-        document
-        .getElementById(btn.dataset.target)
-        .classList.add("active");
+document
+.getElementById(
+this.dataset.target
+)
+.classList.add("active");
 
-    });
+});
 
 });
 
 
 /* =====================================================
-   HELPER FUNCTIONS
+   HELPERS
 ===================================================== */
 
-function val(v, fallback=0){
+function val(value,fallback=0){
 
-    const n = Number(v);
+const n = Number(value);
 
-    return isNaN(n) ? fallback : n;
-
-}
-
-
-function avg(arr){
-
-    if(!arr.length)
-        return 0;
-
-    return arr.reduce(
-        (a,b)=>a+b,
-        0
-    ) / arr.length;
+return isNaN(n)
+? fallback
+: n;
 
 }
 
 
-function unique(arr){
+function avg(array){
 
-    return [
-        ...new Set(
-            arr.filter(
-                x =>
-                x !== undefined &&
-                x !== null &&
-                x !== ""
-            )
-        )
-    ];
+if(!array.length)
+return 0;
+
+return array.reduce(
+(a,b)=>a+b,
+0
+) / array.length;
+
+}
+
+
+function unique(array){
+
+return [
+...new Set(
+array.filter(
+x =>
+x !== undefined &&
+x !== null &&
+x !== ""
+)
+)
+];
+
+}
+
+
+function getValue(
+row,
+names,
+fallback=""
+){
+
+for(
+const name of names
+){
+
+if(
+row[name] !== undefined &&
+row[name] !== ""
+){
+
+return row[name];
+
+}
+
+}
+
+return fallback;
 
 }
 
 
 /* =====================================================
-   GET VALUE FROM MULTIPLE POSSIBLE COLUMN NAMES
-===================================================== */
-
-function getValue(row, names, fallback=""){
-
-    for(const name of names){
-
-        if(
-            row[name] !== undefined &&
-            row[name] !== ""
-        ){
-
-            return row[name];
-
-        }
-
-    }
-
-    return fallback;
-
-}
-
-
-/* =====================================================
-   CHART FUNCTION
+   CHART
 ===================================================== */
 
 function draw(
-    id,
-    type,
-    labels,
-    data,
-    options={}
+id,
+type,
+labels,
+data,
+options={}
 ){
 
-    const canvas =
-        document.getElementById(id);
+const canvas =
+document.getElementById(id);
 
-    if(!canvas)
-        return;
-
-
-    if(charts[id]){
-
-        charts[id].destroy();
-
-    }
+if(!canvas)
+return;
 
 
-    charts[id] =
-    new Chart(
-        canvas,
-        {
+if(charts[id])
+charts[id].destroy();
 
-            type:type,
 
-            data:{
-                labels:labels,
+charts[id] =
+new Chart(
+canvas,
+{
 
-                datasets:[{
+type:type,
 
-                    label:
-                        options.label || "",
+data:{
 
-                    data:data,
+labels:labels,
 
-                    borderWidth:2
+datasets:[{
 
-                }]
+label:
+options.label || "",
 
-            },
+data:data,
 
-            options:{
+borderWidth:2
 
-                responsive:true,
+}]
 
-                maintainAspectRatio:false,
+},
 
-                plugins:{
+options:{
 
-                    legend:{
-                        display:
-                            options.legend ?? false
-                    }
+responsive:true,
 
-                },
+maintainAspectRatio:false,
 
-                scales:
-                    type === "doughnut"
-                    ? {}
-                    : {
+plugins:{
 
-                        y:{
-                            beginAtZero:true
-                        }
+legend:{
+display:
+options.legend ?? false
+}
 
-                    }
+},
 
-            }
+scales:
+type === "doughnut"
+?
+{}
+:
+{
 
-        }
-    );
+y:{
+beginAtZero:true
+}
+
+}
+
+}
+
+}
+
+);
 
 }
 
@@ -1142,973 +1675,1340 @@ function draw(
 
 function updateDashboard(){
 
-    const st =
-        DATA.Students || [];
+const st =
+DATA.Students || [];
 
-    const fac =
-        DATA.Faculty || [];
+const fac =
+DATA.Faculty || [];
 
-    const att =
-        DATA.Attendance || [];
+const att =
+DATA.Attendance || [];
 
-    const res =
-        DATA.Results || [];
+const res =
+DATA.Results || [];
+
+const plc =
+DATA.Placement || [];
+
+const act =
+DATA.Activities || [];
 
-    const plc =
-        DATA.Placement || [];
+const proj =
+DATA.Projects || [];
 
-    const act =
-        DATA.Activities || [];
+const ach =
+DATA.Achievements || [];
+
+const courses =
+DATA.Courses || [];
+
+const training =
+DATA.Training || [];
+
+const tt =
+DATA.Timetable || [];
+
+const cal =
+DATA["Academic Calendar"] || [];
+
+const overview =
+(DATA.Overview || [])[0] || {};
+
+
+/* DEPARTMENT */
+
+const department =
+getValue(
+overview,
+[
+"Department Name",
+"Department"
+],
+"BIET – Department of Computer Science & Engineering"
+);
+
+const academicYear =
+getValue(
+overview,
+[
+"Academic Year",
+"Year"
+],
+"2026-27"
+);
+
+const hod =
+getValue(
+overview,
+[
+"HOD Name",
+"HOD",
+"Head of Department"
+],
+"Update in Excel"
+);
+
+
+document
+.getElementById("deptName")
+.textContent =
+department;
+
+
+document
+.getElementById("headerInfo")
+.innerHTML =
+`Academic Year ${academicYear}
+|
+HOD:
+<span>${hod}</span>`;
+
+
+/* STUDENTS */
+
+const totalStudents =
+st.length ||
+val(
+getValue(
+overview,
+["Total Students"],
+0
+)
+);
+
 
-    const proj =
-        DATA.Projects || [];
-
-    const ach =
-        DATA.Achievements || [];
-
-    const courses =
-        DATA.Courses || [];
-
-    const training =
-        DATA.Training || [];
-
-    const tt =
-        DATA.Timetable || [];
-
-    const cal =
-        DATA["Academic Calendar"] || [];
-
-
-    const overview =
-        (DATA.Overview || [])[0] || {};
-
-
-    /* =================================================
-       DEPARTMENT INFORMATION
-    ================================================= */
-
-    const departmentName =
-        getValue(
-            overview,
-            [
-                "Department Name",
-                "Department",
-                "Name"
-            ],
-            "BIET – Department of Computer Science & Engineering"
-        );
-
-
-    const academicYear =
-        getValue(
-            overview,
-            [
-                "Academic Year",
-                "Year"
-            ],
-            "2026-27"
-        );
-
-
-    const hodName =
-        getValue(
-            overview,
-            [
-                "HOD Name",
-                "HOD",
-                "Head of Department"
-            ],
-            "Update in Excel"
-        );
-
-
-    document
-    .getElementById("deptName")
-    .textContent =
-        departmentName;
-
-
-    document
-    .getElementById("headerInfo")
-    .innerHTML =
-        `Academic Year ${academicYear}
-        |
-        HOD:
-        <span id="hodName">
-        ${hodName}
-        </span>`;
-
-
-    /* =================================================
-       TOTAL STUDENTS
-    ================================================= */
-
-    const totalSt =
-        st.length ||
-        val(
-            getValue(
-                overview,
-                ["Total Students"],
-                0
-            )
-        );
-
-
-    /* =================================================
-       TOTAL FACULTY
-    ================================================= */
-
-    const totalF =
-        fac.length ||
-        val(
-            getValue(
-                overview,
-                ["Total Faculty"],
-                0
-            )
-        );
-
-
-    /* =================================================
-       ATTENDANCE
-    ================================================= */
-
-    const attendanceValues =
-        att
-        .map(r =>
-            val(
-                getValue(
-                    r,
-                    [
-                        "Attendance %",
-                        "Attendance%",
-                        "%",
-                        "Percentage"
-                    ],
-                    0
-                )
-            )
-        )
-        .filter(x => x > 0);
-
-
-    const attAvg =
-        attendanceValues.length
-        ? avg(attendanceValues).toFixed(1)
-        : 0;
-
-
-    /* =================================================
-       RESULTS
-    ================================================= */
-
-    const resultValues =
-        res
-        .map(r =>
-            val(
-                getValue(
-                    r,
-                    [
-                        "Pass %",
-                        "Pass%",
-                        "Pass Percentage"
-                    ],
-                    0
-                )
-            )
-        )
-        .filter(x => x > 0);
-
-
-    const passAvg =
-        resultValues.length
-        ? avg(resultValues).toFixed(1)
-        : 0;
-
-
-    /* =================================================
-       PLACEMENT
-    ================================================= */
-
-    const placed =
-        plc.length;
-
-
-    const placementPct =
-        totalSt
-        ? Math.round(
-            placed / totalSt * 100
-        )
-        : 0;
-
-
-    /* =================================================
-       UPDATE OVERVIEW KPI
-    ================================================= */
-
-    document
-    .getElementById("kStudents")
-    .textContent =
-        totalSt;
-
-
-    document
-    .getElementById("kFaculty")
-    .textContent =
-        totalF;
-
-
-    document
-    .getElementById("kAttendance")
-    .textContent =
-        attAvg + "%";
-
-
-    document
-    .getElementById("kPass")
-    .textContent =
-        passAvg + "%";
-
-
-    document
-    .getElementById("kPlacement")
-    .textContent =
-        placementPct + "%";
-
-
-    document
-    .getElementById("kProjects")
-    .textContent =
-        proj.length;
-
-
-    /* =================================================
-       YEAR-WISE STUDENTS
-    ================================================= */
-
-    const years =
-        ["1","2","3","4"];
-
-
-    const yearCounts =
-        years.map(y => {
-
-            return st.filter(r => {
-
-                const year =
-                    String(
-                        getValue(
-                            r,
-                            [
-                                "Year",
-                                "year",
-                                "Study Year"
-                            ],
-                            ""
-                        )
-                    ).trim();
-
-
-                if(year === y)
-                    return true;
-
-
-                /* Semester based calculation */
-
-                const sem =
-                    val(
-                        getValue(
-                            r,
-                            [
-                                "Semester",
-                                "Sem"
-                            ],
-                            0
-                        )
-                    );
-
-
-                if(y === "1")
-                    return sem === 1 || sem === 2;
-
-                if(y === "2")
-                    return sem === 3 || sem === 4;
-
-                if(y === "3")
-                    return sem === 5 || sem === 6;
-
-                if(y === "4")
-                    return sem === 7 || sem === 8;
-
-                return false;
-
-            }).length;
-
-        });
-
-
-    /* =================================================
-       STUDENT KPIs
-    ================================================= */
-
-    document
-    .getElementById("sTotal")
-    .textContent =
-        totalSt;
-
-
-    document
-    .getElementById("s1")
-    .textContent =
-        yearCounts[0];
-
-
-    document
-    .getElementById("s2")
-    .textContent =
-        yearCounts[1];
-
-
-    document
-    .getElementById("s3")
-    .textContent =
-        yearCounts[2];
-
-
-    document
-    .getElementById("s4")
-    .textContent =
-        yearCounts[3];
-
-
-    /* =================================================
-       FACULTY
-    ================================================= */
-
-    document
-    .getElementById("fTotal")
-    .textContent =
-        totalF;
-
-
-    const publications =
-        fac.reduce(
-            (sum,r) =>
-            sum +
-            val(
-                getValue(
-                    r,
-                    [
-                        "Publications",
-                        "Publication"
-                    ],
-                    0
-                )
-            ),
-            0
-        );
-
-
-    const fdp =
-        fac.reduce(
-            (sum,r) =>
-            sum +
-            val(
-                getValue(
-                    r,
-                    [
-                        "FDP/Workshops Attended",
-                        "FDP",
-                        "Workshops"
-                    ],
-                    0
-                )
-            ),
-            0
-        );
-
-
-    document
-    .getElementById("fPub")
-    .textContent =
-        publications;
-
-
-    document
-    .getElementById("fFdp")
-    .textContent =
-        fdp;
-
-
-    /* =================================================
-       COURSES
-    ================================================= */
-
-    document
-    .getElementById("courseCount")
-    .textContent =
-        courses.length;
-
-
-    /* =================================================
-       YEAR CHART
-    ================================================= */
-
-    draw(
-        "yearChart",
-        "bar",
-        [
-            "1st Year",
-            "2nd Year",
-            "3rd Year",
-            "4th Year"
-        ],
-        yearCounts,
-        {
-            label:"Students"
-        }
-    );
-
-
-    /* =================================================
-       PERFORMANCE CHART
-    ================================================= */
-
-    draw(
-        "perfChart",
-        "bar",
-        [
-            "Attendance",
-            "Pass",
-            "Placement"
-        ],
-        [
-            Number(attAvg),
-            Number(passAvg),
-            placementPct
-        ],
-        {
-            label:"Percentage"
-        }
-    );
-
-
-    /* =================================================
-       STUDENT CHART
-    ================================================= */
-
-    draw(
-        "studentChart",
-        "bar",
-        [
-            "Attendance",
-            "Pass"
-        ],
-        [
-            Number(attAvg),
-            Number(passAvg)
-        ],
-        {
-            label:"Percentage"
-        }
-    );
-
-
-    /* =================================================
-       DESIGNATION CHART
-    ================================================= */
-
-    const designations =
-        unique(
-            fac.map(r =>
-                getValue(
-                    r,
-                    [
-                        "Designation"
-                    ],
-                    ""
-                )
-            )
-        );
-
-
-    const designationCounts =
-        designations.map(
-            d =>
-            fac.filter(
-                r =>
-                getValue(
-                    r,
-                    ["Designation"],
-                    ""
-                ) === d
-            ).length
-        );
-
-
-    draw(
-        "designationChart",
-        "doughnut",
-        designations,
-        designationCounts,
-        {
-            legend:true
-        }
-    );
-
-
-    /* =================================================
-       FACULTY WORKLOAD
-    ================================================= */
-
-    const workload =
-        fac.slice(0,12);
-
-
-    const workloadLabels =
-        workload.map(
-            r =>
-            getValue(
-                r,
-                [
-                    "Faculty Name",
-                    "Name"
-                ],
-                "Faculty"
-            )
-        );
-
-
-    const workloadValues =
-        workload.map(
-            r =>
-            val(
-                getValue(
-                    r,
-                    [
-                        "Workload (Hours/Week)",
-                        "Workload",
-                        "Hours/Week"
-                    ],
-                    0
-                )
-            )
-        );
-
-
-    draw(
-        "workloadChart",
-        "bar",
-        workloadLabels,
-        workloadValues,
-        {
-            label:"Hours/Week"
-        }
-    );
-
-
-    /* =================================================
-       PLACEMENT
-    ================================================= */
-
-    document
-    .getElementById("pPlaced")
-    .textContent =
-        placed;
-
-
-    const companies =
-        unique(
-            plc.map(
-                r =>
-                getValue(
-                    r,
-                    [
-                        "Company",
-                        "Company Name"
-                    ],
-                    ""
-                )
-            )
-        );
-
-
-    document
-    .getElementById("pCompanies")
-    .textContent =
-        companies.length;
-
-
-    const packages =
-        plc
-        .map(
-            r =>
-            val(
-                getValue(
-                    r,
-                    [
-                        "Package (LPA)",
-                        "Package",
-                        "Package LPA"
-                    ],
-                    0
-                )
-            )
-        )
-        .filter(
-            x => x > 0
-        );
-
-
-    document
-    .getElementById("pHighest")
-    .textContent =
-        packages.length
-        ? Math.max(...packages).toFixed(1) + " LPA"
-        : "—";
-
-
-    document
-    .getElementById("pAverage")
-    .textContent =
-        packages.length
-        ? avg(packages).toFixed(1) + " LPA"
-        : "—";
-
-
-    const internships =
-        plc.filter(
-            r =>
-            getValue(
-                r,
-                [
-                    "Internship Company",
-                    "Internship"
-                ],
-                ""
-            ) !== ""
-        ).length;
-
-
-    document
-    .getElementById("pIntern")
-    .textContent =
-        internships;
-
-
-    draw(
-        "packageChart",
-        "bar",
-        packages.map(
-            (_,i) =>
-            "Student " + (i+1)
-        ),
-        packages,
-        {
-            label:"Package (LPA)"
-        }
-    );
-
-
-    /* =================================================
-       TRAINING
-    ================================================= */
-
-    document
-    .getElementById("trainingList")
-    .innerHTML =
-        training.length
-        ?
-        "<ul>" +
-        training
-        .slice(0,8)
-        .map(
-            r =>
-            `<li>
-                <b>
-                ${getValue(
-                    r,
-                    ["Program","Program Name"],
-                    ""
-                )}
-                </b>
-                –
-                ${getValue(
-                    r,
-                    ["Type"],
-                    ""
-                )}
-                (
-                ${getValue(
-                    r,
-                    ["Participants"],
-                    0
-                )}
-                participants)
-            </li>`
-        )
-        .join("") +
-        "</ul>"
-        :
-        "No training data available.";
-
-
-    /* =================================================
-       ACTIVITIES
-    ================================================= */
-
-    document
-    .getElementById("aActivities")
-    .textContent =
-        act.length;
-
-
-    document
-    .getElementById("aProjects")
-    .textContent =
-        proj.length;
-
-
-    document
-    .getElementById("aAchievements")
-    .textContent =
-        ach.length;
-
-
-    /* =================================================
-       ACTIVITY CHART
-    ================================================= */
-
-    const activityTypes =
-        unique(
-            act.map(
-                r =>
-                getValue(
-                    r,
-                    [
-                        "Activity Type",
-                        "Type"
-                    ],
-                    ""
-                )
-            )
-        );
-
-
-    const activityCounts =
-        activityTypes.map(
-            t =>
-            act.filter(
-                r =>
-                getValue(
-                    r,
-                    [
-                        "Activity Type",
-                        "Type"
-                    ],
-                    ""
-                ) === t
-            ).length
-        );
-
-
-    draw(
-        "activityChart",
-        "doughnut",
-        activityTypes,
-        activityCounts,
-        {
-            legend:true
-        }
-    );
-
-
-    /* =================================================
-       ACHIEVEMENTS
-    ================================================= */
-
-    document
-    .getElementById("achievementList")
-    .innerHTML =
-        ach.length
-        ?
-        "<ul>" +
-        ach
-        .slice(-8)
-        .reverse()
-        .map(
-            r =>
-            `<li>
-                <b>
-                ${getValue(
-                    r,
-                    [
-                        "Student/Faculty",
-                        "Name"
-                    ],
-                    ""
-                )}
-                </b>
-                –
-                ${getValue(
-                    r,
-                    [
-                        "Achievement"
-                    ],
-                    ""
-                )}
-                (
-                ${getValue(
-                    r,
-                    [
-                        "Level"
-                    ],
-                    ""
-                )}
-                )
-            </li>`
-        )
-        .join("") +
-        "</ul>"
-        :
-        "No achievement data available.";
-
-
-    /* =================================================
-       ACADEMIC CALENDAR
-    ================================================= */
-
-    document
-    .getElementById("calendarList")
-    .innerHTML =
-        cal.length
-        ?
-        "<ul>" +
-        cal
-        .slice(0,8)
-        .map(
-            r =>
-            `<li>
-                <b>
-                ${getValue(
-                    r,
-                    ["Date"],
-                    ""
-                )}
-                </b>
-                –
-                ${getValue(
-                    r,
-                    ["Event"],
-                    ""
-                )}
-            </li>`
-        )
-        .join("") +
-        "</ul>"
-        :
-        "No academic calendar data available.";
-
-
-    /* =================================================
-       TIMETABLE
-    ================================================= */
-
-    document
-    .getElementById("timetableTable")
-    .innerHTML =
-        makeTable(
-            tt.slice(0,20)
-        );
-
-
-    /* =================================================
-       EXCEL DATA PREVIEW
-    ================================================= */
-
-    document
-    .getElementById("dataPreview")
-    .innerHTML =
-        makeTable(
-            st.slice(0,20)
-        );
+/* FACULTY */
+
+const totalFaculty =
+fac.length ||
+val(
+getValue(
+overview,
+["Total Faculty"],
+0
+)
+);
+
+
+/* ATTENDANCE */
+
+const attendance =
+att
+.map(
+r =>
+val(
+getValue(
+r,
+[
+"Attendance %",
+"Attendance%",
+"Percentage",
+"%"
+],
+0
+)
+)
+)
+.filter(x=>x>0);
+
+
+const attendanceAverage =
+attendance.length
+?
+avg(attendance).toFixed(1)
+:0;
+
+
+/* RESULTS */
+
+const results =
+res
+.map(
+r =>
+val(
+getValue(
+r,
+[
+"Pass %",
+"Pass%",
+"Pass Percentage"
+],
+0
+)
+)
+)
+.filter(x=>x>0);
+
+
+const passAverage =
+results.length
+?
+avg(results).toFixed(1)
+:0;
+
+
+/* PLACEMENT */
+
+const placed =
+plc.length;
+
+const placementPercentage =
+totalStudents
+?
+Math.round(
+placed /
+totalStudents *
+100
+)
+:0;
+
+
+/* KPI */
+
+document
+.getElementById("kStudents")
+.textContent =
+totalStudents;
+
+document
+.getElementById("kFaculty")
+.textContent =
+totalFaculty;
+
+document
+.getElementById("kAttendance")
+.textContent =
+attendanceAverage + "%";
+
+document
+.getElementById("kPass")
+.textContent =
+passAverage + "%";
+
+document
+.getElementById("kPlacement")
+.textContent =
+placementPercentage + "%";
+
+document
+.getElementById("kProjects")
+.textContent =
+proj.length;
+
+
+/* YEAR */
+
+const yearCounts =
+[1,2,3,4]
+.map(
+year =>
+st.filter(
+r => {
+
+const y =
+String(
+getValue(
+r,
+[
+"Year",
+"Study Year"
+],
+""
+)
+);
+
+if(y === String(year))
+return true;
+
+const sem =
+val(
+getValue(
+r,
+[
+"Semester",
+"Sem"
+],
+0
+)
+);
+
+if(year === 1)
+return sem===1 || sem===2;
+
+if(year === 2)
+return sem===3 || sem===4;
+
+if(year === 3)
+return sem===5 || sem===6;
+
+if(year === 4)
+return sem===7 || sem===8;
+
+return false;
+
+}
+).length
+);
+
+
+/* STUDENT KPI */
+
+document
+.getElementById("sTotal")
+.textContent =
+totalStudents;
+
+document
+.getElementById("s1")
+.textContent =
+yearCounts[0];
+
+document
+.getElementById("s2")
+.textContent =
+yearCounts[1];
+
+document
+.getElementById("s3")
+.textContent =
+yearCounts[2];
+
+document
+.getElementById("s4")
+.textContent =
+yearCounts[3];
+
+
+/* CHARTS */
+
+draw(
+"yearChart",
+"bar",
+[
+"1st Year",
+"2nd Year",
+"3rd Year",
+"4th Year"
+],
+yearCounts,
+{
+label:"Students"
+}
+);
+
+
+draw(
+"perfChart",
+"bar",
+[
+"Attendance",
+"Pass",
+"Placement"
+],
+[
+Number(attendanceAverage),
+Number(passAverage),
+placementPercentage
+],
+{
+label:"Percentage"
+}
+);
+
+
+draw(
+"studentChart",
+"bar",
+[
+"Attendance",
+"Pass"
+],
+[
+Number(attendanceAverage),
+Number(passAverage)
+],
+{
+label:"Percentage"
+}
+);
+
+
+/* FACULTY */
+
+document
+.getElementById("fTotal")
+.textContent =
+totalFaculty;
+
+
+const publications =
+fac.reduce(
+(sum,row)=>
+sum +
+val(
+getValue(
+row,
+[
+"Publications",
+"Publication"
+],
+0
+)
+),
+0
+);
+
+
+const fdp =
+fac.reduce(
+(sum,row)=>
+sum +
+val(
+getValue(
+row,
+[
+"FDP/Workshops Attended",
+"FDP",
+"Workshops"
+],
+0
+)
+),
+0
+);
+
+
+document
+.getElementById("fPub")
+.textContent =
+publications;
+
+document
+.getElementById("fFdp")
+.textContent =
+fdp;
+
+
+/* DESIGNATIONS */
+
+const designations =
+unique(
+fac.map(
+r =>
+getValue(
+r,
+["Designation"],
+""
+)
+)
+);
+
+
+const designationCounts =
+designations.map(
+d =>
+fac.filter(
+r =>
+getValue(
+r,
+["Designation"],
+""
+) === d
+).length
+);
+
+
+draw(
+"designationChart",
+"doughnut",
+designations,
+designationCounts,
+{
+legend:true
+}
+);
+
+
+/* FACULTY TABLE */
+
+document
+.getElementById("facultyTable")
+.innerHTML =
+makeTable(
+fac
+.slice(0,50)
+);
+
+
+/* FACULTY WORKLOAD */
+
+const workload =
+fac.slice(0,12);
+
+
+draw(
+"workloadChart",
+"bar",
+workload.map(
+r =>
+getValue(
+r,
+[
+"Faculty Name",
+"Name"
+],
+"Faculty"
+)
+),
+workload.map(
+r =>
+val(
+getValue(
+r,
+[
+"Workload (Hours/Week)",
+"Workload",
+"Hours/Week"
+],
+0
+)
+)
+),
+{
+label:"Hours/Week"
+}
+);
+
+
+/* COURSES */
+
+document
+.getElementById("courseCount")
+.textContent =
+courses.length;
+
+
+/* CALENDAR */
+
+document
+.getElementById("calendarList")
+.innerHTML =
+cal.length
+?
+"<ul>" +
+cal
+.slice(0,10)
+.map(
+r =>
+`<li>
+<b>
+${getValue(
+r,
+["Date"],
+""
+)}
+</b>
+–
+${getValue(
+r,
+["Event"],
+""
+)}
+</li>`
+)
+.join("")
++
+"</ul>"
+:
+"No calendar data available.";
+
+
+/* TIMETABLE */
+
+document
+.getElementById("timetableTable")
+.innerHTML =
+makeTable(
+tt.slice(0,30)
+);
+
+
+/* PLACEMENT */
+
+document
+.getElementById("pPlaced")
+.textContent =
+placed;
+
+
+const companies =
+unique(
+plc.map(
+r =>
+getValue(
+r,
+[
+"Company",
+"Company Name"
+],
+""
+)
+)
+);
+
+
+document
+.getElementById("pCompanies")
+.textContent =
+companies.length;
+
+
+const packages =
+plc
+.map(
+r =>
+val(
+getValue(
+r,
+[
+"Package (LPA)",
+"Package",
+"Package LPA"
+],
+0
+)
+)
+)
+.filter(x=>x>0);
+
+
+document
+.getElementById("pHighest")
+.textContent =
+packages.length
+?
+Math.max(...packages)
+.toFixed(1)
++
+" LPA"
+:
+"—";
+
+
+document
+.getElementById("pAverage")
+.textContent =
+packages.length
+?
+avg(packages)
+.toFixed(1)
++
+" LPA"
+:
+"—";
+
+
+const internships =
+plc.filter(
+r =>
+getValue(
+r,
+[
+"Internship Company",
+"Internship"
+],
+""
+)
+!==""
+).length;
+
+
+document
+.getElementById("pIntern")
+.textContent =
+internships;
+
+
+draw(
+"packageChart",
+"bar",
+packages.map(
+(_,i)=>
+"Student " +
+(i+1)
+),
+packages,
+{
+label:"Package (LPA)"
+}
+);
+
+
+/* TRAINING */
+
+document
+.getElementById("trainingList")
+.innerHTML =
+training.length
+?
+"<ul>" +
+training
+.slice(0,10)
+.map(
+r =>
+`<li>
+<b>
+${getValue(
+r,
+[
+"Program",
+"Program Name"
+],
+""
+)}
+</b>
+–
+${getValue(
+r,
+["Type"],
+""
+)}
+(
+${getValue(
+r,
+["Participants"],
+0
+)}
+participants)
+</li>`
+)
+.join("")
++
+"</ul>"
+:
+"No training data available.";
+
+
+/* ACTIVITIES */
+
+document
+.getElementById("aActivities")
+.textContent =
+act.length;
+
+
+document
+.getElementById("aProjects")
+.textContent =
+proj.length;
+
+
+document
+.getElementById("aAchievements")
+.textContent =
+ach.length;
+
+
+/* ACTIVITY CHART */
+
+const activityTypes =
+unique(
+act.map(
+r =>
+getValue(
+r,
+[
+"Activity Type",
+"Type"
+],
+""
+)
+)
+);
+
+
+const activityCounts =
+activityTypes.map(
+type =>
+act.filter(
+r =>
+getValue(
+r,
+[
+"Activity Type",
+"Type"
+],
+""
+) === type
+).length
+);
+
+
+draw(
+"activityChart",
+"doughnut",
+activityTypes,
+activityCounts,
+{
+legend:true
+}
+);
+
+
+/* ACHIEVEMENTS */
+
+document
+.getElementById("achievementList")
+.innerHTML =
+ach.length
+?
+"<ul>" +
+ach
+.slice(-10)
+.reverse()
+.map(
+r =>
+`<li>
+<b>
+${getValue(
+r,
+[
+"Student/Faculty",
+"Name"
+],
+""
+)}
+</b>
+–
+${getValue(
+r,
+["Achievement"],
+""
+)}
+(
+${getValue(
+r,
+["Level"],
+""
+)}
+)
+</li>`
+)
+.join("")
++
+"</ul>"
+:
+"No achievement data available.";
+
+
+/* STUDENT FILTERS */
+
+setupStudentFilters();
+
+filteredStudents =
+[...st];
+
+renderStudentTable(
+filteredStudents
+);
+
+
+/* SHEET BUTTONS */
+
+createSheetButtons();
 
 }
 
 
 /* =====================================================
-   CREATE TABLE
+   STUDENT FILTER SETUP
+===================================================== */
+
+function setupStudentFilters(){
+
+const st =
+DATA.Students || [];
+
+
+/* SECTION */
+
+const sections =
+unique(
+st.map(
+r =>
+getValue(
+r,
+["Section"],
+""
+)
+)
+);
+
+
+const sectionSelect =
+document
+.getElementById(
+"sectionFilter"
+);
+
+
+sectionSelect.innerHTML =
+'<option value="">All Sections</option>' +
+sections
+.map(
+s =>
+`<option value="${s}">
+${s}
+</option>`
+)
+.join("");
+
+
+/* GENDER */
+
+const genders =
+unique(
+st.map(
+r =>
+getValue(
+r,
+["Gender"],
+""
+)
+)
+);
+
+
+const genderSelect =
+document
+.getElementById(
+"genderFilter"
+);
+
+
+genderSelect.innerHTML =
+'<option value="">All</option>' +
+genders
+.map(
+g =>
+`<option value="${g}">
+${g}
+</option>`
+)
+.join("");
+
+
+/* CATEGORY */
+
+const categories =
+unique(
+st.map(
+r =>
+getValue(
+r,
+["Category"],
+""
+)
+)
+);
+
+
+const categorySelect =
+document
+.getElementById(
+"categoryFilter"
+);
+
+
+categorySelect.innerHTML =
+'<option value="">All Categories</option>' +
+categories
+.map(
+c =>
+`<option value="${c}">
+${c}
+</option>`
+)
+.join("");
+
+}
+
+
+/* =====================================================
+   FILTER STUDENTS
+===================================================== */
+
+function filterStudents(){
+
+const students =
+DATA.Students || [];
+
+
+const search =
+document
+.getElementById(
+"studentSearch"
+)
+.value
+.toLowerCase()
+.trim();
+
+
+const semester =
+document
+.getElementById(
+"semesterFilter"
+)
+.value;
+
+
+const section =
+document
+.getElementById(
+"sectionFilter"
+)
+.value;
+
+
+const gender =
+document
+.getElementById(
+"genderFilter"
+)
+.value;
+
+
+const category =
+document
+.getElementById(
+"categoryFilter"
+)
+.value;
+
+
+filteredStudents =
+students.filter(
+student => {
+
+const usn =
+String(
+getValue(
+student,
+["USN"],
+""
+)
+)
+.toLowerCase();
+
+
+const name =
+String(
+getValue(
+student,
+["Name"],
+""
+)
+)
+.toLowerCase();
+
+
+const studentSemester =
+String(
+getValue(
+student,
+[
+"Semester",
+"Sem"
+],
+""
+)
+);
+
+
+const studentSection =
+String(
+getValue(
+student,
+["Section"],
+""
+)
+);
+
+
+const studentGender =
+String(
+getValue(
+student,
+["Gender"],
+""
+)
+);
+
+
+const studentCategory =
+String(
+getValue(
+student,
+["Category"],
+""
+)
+);
+
+
+const matchesSearch =
+!search ||
+usn.includes(search) ||
+name.includes(search);
+
+
+const matchesSemester =
+!semester ||
+studentSemester === semester;
+
+
+const matchesSection =
+!section ||
+studentSection === section;
+
+
+const matchesGender =
+!gender ||
+studentGender === gender;
+
+
+const matchesCategory =
+!category ||
+studentCategory === category;
+
+
+return (
+matchesSearch &&
+matchesSemester &&
+matchesSection &&
+matchesGender &&
+matchesCategory
+);
+
+}
+);
+
+
+renderStudentTable(
+filteredStudents
+);
+
+}
+
+
+/* =====================================================
+   CLEAR FILTERS
+===================================================== */
+
+function clearStudentFilters(){
+
+document
+.getElementById(
+"studentSearch"
+)
+.value="";
+
+
+document
+.getElementById(
+"semesterFilter"
+)
+.value="";
+
+
+document
+.getElementById(
+"sectionFilter"
+)
+.value="";
+
+
+document
+.getElementById(
+"genderFilter"
+)
+.value="";
+
+
+document
+.getElementById(
+"categoryFilter"
+)
+.value="";
+
+
+filterStudents();
+
+}
+
+
+/* =====================================================
+   STUDENT TABLE
+===================================================== */
+
+function renderStudentTable(rows){
+
+document
+.getElementById(
+"studentCount"
+)
+.textContent =
+"Showing " +
+rows.length +
+" students";
+
+
+document
+.getElementById(
+"studentTable"
+)
+.innerHTML =
+makeTable(
+rows
+);
+
+}
+
+
+/* =====================================================
+   MAKE TABLE
 ===================================================== */
 
 function makeTable(rows){
 
-    if(!rows.length){
+if(!rows.length){
 
-        return `
-            <p style="padding:10px">
-                No data available.
-            </p>
-        `;
+return `
+<p style="padding:15px">
+No data available.
+</p>
+`;
 
-    }
-
-
-    const cols =
-        Object.keys(
-            rows[0]
-        );
+}
 
 
-    return `
-
-        <table>
-
-            <thead>
-
-                <tr>
-
-                    ${
-                        cols
-                        .map(
-                            c =>
-                            `<th>${c}</th>`
-                        )
-                        .join("")
-                    }
-
-                </tr>
-
-            </thead>
+const columns =
+Object.keys(
+rows[0]
+);
 
 
-            <tbody>
+return `
 
-                ${
-                    rows
-                    .map(
-                        r =>
+<table>
 
-                        "<tr>" +
+<thead>
 
-                        cols
-                        .map(
-                            c =>
-                            `<td>
-                                ${r[c] ?? ""}
-                            </td>`
-                        )
-                        .join("") +
+<tr>
 
-                        "</tr>"
-                    )
-                    .join("")
-                }
+${
+columns
+.map(
+column =>
+`<th>
+${column}
+</th>`
+)
+.join("")
+}
 
-            </tbody>
+</tr>
 
-        </table>
+</thead>
 
-    `;
+
+<tbody>
+
+${
+rows
+.map(
+row =>
+
+"<tr>" +
+
+columns
+.map(
+column =>
+
+`<td>
+${row[column] ?? ""}
+</td>`
+
+)
+.join("")
+
++
+
+"</tr>"
+
+)
+.join("")
+}
+
+</tbody>
+
+</table>
+
+`;
+
+}
+
+
+/* =====================================================
+   SHEET BUTTONS
+===================================================== */
+
+function createSheetButtons(){
+
+const container =
+document
+.getElementById(
+"sheetButtons"
+);
+
+
+container.innerHTML="";
+
+
+Object
+.keys(DATA)
+.forEach(
+sheet => {
+
+const button =
+document.createElement(
+"button"
+);
+
+button.className =
+"btn-blue";
+
+button.textContent =
+"📄 " + sheet;
+
+button.onclick =
+function(){
+
+document
+.getElementById(
+"dataPreview"
+)
+.innerHTML =
+makeTable(
+DATA[sheet]
+);
+
+};
+
+container.appendChild(
+button
+);
+
+});
 
 }
 
@@ -2119,200 +3019,203 @@ function makeTable(rows){
 
 async function loadExcelFromGitHub(){
 
-    const status =
-        document
-        .getElementById("excelStatus");
+const status =
+document
+.getElementById(
+"excelStatus"
+);
 
 
-    status.textContent =
-        "⏳ Loading Excel data...";
+status.textContent =
+"⏳ Loading Excel data...";
 
 
-    try{
+try{
 
-        const response =
-            await fetch(
-                EXCEL_FILE + "?v=" + Date.now()
-            );
-
-
-        if(!response.ok){
-
-            throw new Error(
-                "Excel file not found"
-            );
-
-        }
+const response =
+await fetch(
+EXCEL_FILE +
+"?v=" +
+Date.now()
+);
 
 
-        const arrayBuffer =
-            await response.arrayBuffer();
+if(!response.ok){
+
+throw new Error(
+"Excel file not found"
+);
+
+}
 
 
-        const wb =
-            XLSX.read(
-                new Uint8Array(
-                    arrayBuffer
-                ),
-                {
-                    type:"array"
-                }
-            );
+const buffer =
+await response.arrayBuffer();
 
 
-        DATA = {};
+const workbook =
+XLSX.read(
+new Uint8Array(buffer),
+{
+type:"array"
+}
+);
 
 
-        wb.SheetNames
-        .forEach(
-            name => {
-
-                DATA[name] =
-                    XLSX.utils.sheet_to_json(
-                        wb.Sheets[name],
-                        {
-                            defval:""
-                        }
-                    );
-
-            }
-        );
+DATA={};
 
 
-        updateDashboard();
+workbook
+.SheetNames
+.forEach(
+sheetName => {
+
+DATA[sheetName] =
+XLSX.utils.sheet_to_json(
+workbook.Sheets[sheetName],
+{
+defval:""
+}
+);
+
+}
+);
 
 
-        status.textContent =
-            "✅ Excel data loaded successfully";
+updateDashboard();
 
 
-        console.log(
-            "Excel sheets:",
-            wb.SheetNames
-        );
+status.textContent =
+"✅ Excel data loaded successfully";
 
 
-    }
-    catch(error){
-
-        console.error(error);
-
-
-        status.textContent =
-            "⚠️ Excel could not be loaded";
+console.log(
+"Loaded sheets:",
+workbook.SheetNames
+);
 
 
-        alert(
-            "Excel file could not be loaded.\n\n" +
+}
 
-            "Please check that:\n" +
+catch(error){
 
-            "1. BIET_CSE_Data.xlsx is uploaded to GitHub.\n" +
+console.error(error);
 
-            "2. The file name is exactly BIET_CSE_Data.xlsx.\n" +
 
-            "3. The Excel file is in the same location as index.html."
-        );
+status.textContent =
+"⚠️ Excel could not be loaded";
 
-    }
+
+alert(
+"Excel file could not be loaded.\n\n" +
+
+"Please check that:\n" +
+
+"1. BIET_CSE_Data.xlsx exists in GitHub.\n" +
+
+"2. The file name is exactly BIET_CSE_Data.xlsx.\n" +
+
+"3. The Excel file is in the same repository as index.html."
+);
+
+}
 
 }
 
 
 /* =====================================================
-   LOAD LOCAL EXCEL
+   LOCAL EXCEL
 ===================================================== */
 
 document
-.getElementById("excelFile")
+.getElementById(
+"excelFile"
+)
 .addEventListener(
-    "change",
-    e => {
+"change",
+function(event){
 
-        const file =
-            e.target.files[0];
-
-
-        if(!file)
-            return;
+const file =
+event.target.files[0];
 
 
-        const reader =
-            new FileReader();
+if(!file)
+return;
 
 
-        reader.onload =
-            evt => {
-
-                try{
-
-                    const wb =
-                        XLSX.read(
-                            new Uint8Array(
-                                evt.target.result
-                            ),
-                            {
-                                type:"array"
-                            }
-                        );
+const reader =
+new FileReader();
 
 
-                    DATA = {};
+reader.onload =
+function(e){
 
+try{
 
-                    wb.SheetNames
-                    .forEach(
-                        name => {
-
-                            DATA[name] =
-                                XLSX.utils.sheet_to_json(
-                                    wb.Sheets[name],
-                                    {
-                                        defval:""
-                                    }
-                                );
-
-                        }
-                    );
-
-
-                    updateDashboard();
-
-
-                    document
-                    .getElementById(
-                        "excelStatus"
-                    )
-                    .textContent =
-                        "✅ Local Excel loaded successfully";
-
-
-                    alert(
-                        "Excel data loaded successfully."
-                    );
-
-                }
-                catch(error){
-
-                    console.error(error);
-
-                    alert(
-                        "Error reading Excel file."
-                    );
-
-                }
-
-            };
-
-
-        reader.readAsArrayBuffer(file);
-
-    }
+const workbook =
+XLSX.read(
+new Uint8Array(
+e.target.result
+),
+{
+type:"array"
+}
 );
 
 
+DATA={};
+
+
+workbook
+.SheetNames
+.forEach(
+sheetName => {
+
+DATA[sheetName] =
+XLSX.utils.sheet_to_json(
+workbook.Sheets[sheetName],
+{
+defval:""
+}
+);
+
+}
+);
+
+
+updateDashboard();
+
+
+document
+.getElementById(
+"excelStatus"
+)
+.textContent =
+"✅ Local Excel loaded successfully";
+
+
+}
+
+catch(error){
+
+console.error(error);
+
+alert(
+"Error reading Excel file."
+);
+
+}
+
+};
+
+
+reader.readAsArrayBuffer(file);
+
+});
+
+
 /* =====================================================
-   START DASHBOARD
+   START
 ===================================================== */
 
 loadExcelFromGitHub();

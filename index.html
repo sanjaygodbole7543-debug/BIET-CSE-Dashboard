@@ -1,0 +1,987 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BIET CSE Department 360° Portal</title>
+<!-- External Libraries -->
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+
+<style>
+:root{--navy:#12355b;--blue:#1e6bb8;--sky:#eaf4ff;--green:#15946a;--orange:#ef9b2d;--red:#d9534f;--text:#172033;--muted:#667085;--card:#fff;--bg:#f4f7fb}
+*{box-sizing:border-box} body{margin:0;font-family:'Segoe UI',Arial,sans-serif;background:var(--bg);color:var(--text)}
+header{background:linear-gradient(135deg,#0d2946,#1e6bb8);color:#fff;padding:20px 28px;display:flex;justify-content:space-between;gap:20px;align-items:center;flex-wrap:wrap}
+header h1{margin:0;font-size:24px} header p{margin:4px 0 0;opacity:.9;font-size:13px}
+.actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+button,.file-label{border:0;border-radius:8px;padding:9px 14px;font-weight:600;cursor:pointer;background:#fff;color:var(--navy);font-size:13px}
+.btn-pdf{background:var(--orange);color:#fff}
+.btn-pdf:hover{background:#d8831b}
+.file-label input{display:none}
+
+.user-banner{background:#e7eef7;padding:10px 28px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #d0dbe7;font-size:13px;color:var(--navy)}
+.user-badge{background:var(--navy);color:#fff;padding:3px 10px;border-radius:12px;font-weight:bold;text-transform:uppercase;font-size:11px}
+.logout-btn{background:var(--red);color:#fff;padding:4px 10px;border-radius:6px;border:none;cursor:pointer;font-size:12px}
+
+.container{max-width:1450px;margin:auto;padding:20px}
+.nav{display:flex;gap:8px;overflow-x:auto;margin-bottom:16px;padding-bottom:4px}
+.nav button{background:#e7eef7;color:var(--navy);white-space:nowrap;padding:11px 18px;font-size:14px;border:none;border-radius:8px;cursor:pointer;transition:all 0.2s}
+.nav button:hover{background:#d0dbe7}
+.nav button.active{background:var(--navy);color:#fff;font-weight:bold}
+
+/* Filter Bar */
+.filter-card{background:#fff;padding:16px;border-radius:12px;box-shadow:0 3px 12px #1522380d;margin-bottom:18px;display:flex;gap:14px;flex-wrap:wrap;align-items:center}
+.filter-group{display:flex;flex-direction:column;gap:4px;flex:1;min-width:150px}
+.filter-group label{font-size:11px;font-weight:bold;color:var(--navy);text-transform:uppercase}
+.filter-group input, .filter-group select{padding:9px;border:1px solid #cbd5e1;border-radius:8px;font-size:13px;outline:none}
+
+.grid-360{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:20px}
+.card-360{background:var(--card);padding:20px;border-radius:14px;box-shadow:0 3px 15px #15223812;border-top:4px solid var(--blue);cursor:pointer;transition:transform 0.2s;text-align:center}
+.card-360:hover{transform:translateY(-4px)}
+.card-360 .icon{font-size:32px;margin-bottom:8px}
+.card-360 .title{font-weight:700;font-size:16px;color:var(--navy)}
+.card-360 .subtitle{font-size:12px;color:var(--muted);margin-top:4px}
+
+/* Section Display Management */
+.section{display:none !important}
+.section.active{display:block !important}
+.section-title{display:flex;justify-content:space-between;align-items:center;margin:8px 0 14px}.section-title h2{margin:0;font-size:22px}
+
+/* KPI Grid */
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px}
+.kpi{background:var(--card);padding:16px;border-radius:14px;box-shadow:0 3px 15px #15223812;border-left:5px solid var(--blue)}
+.kpi .label{font-size:12px;color:var(--muted);font-weight:600}.kpi .value{font-size:24px;font-weight:750;margin:4px 0}.kpi small{color:var(--muted);font-size:11px}
+
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px}.card{background:#fff;border-radius:14px;padding:18px;box-shadow:0 3px 15px #15223812}.card h3{margin:0 0 12px}
+.chartbox{height:300px}.chartbox canvas{max-height:280px}
+.table-wrap{overflow:auto;background:#fff;border-radius:14px;box-shadow:0 3px 15px #15223812;margin-top:14px}.table-wrap table{width:100%;border-collapse:collapse;min-width:760px}
+th,td{padding:12px;border-bottom:1px solid #edf0f5;text-align:left;font-size:13px}th{background:#eef5fc;color:var(--navy);position:sticky;top:0}
+tr.clickable-row{cursor:pointer}tr.clickable-row:hover{background:#f1f7ff}
+
+/* Placement Custom Styling */
+.placement-header{display:flex;justify-content:space-between;align-items:center;font-size:11px;letter-spacing:1px;color:#888;font-weight:700;margin-bottom:10px}
+.placement-legend{display:flex;gap:20px;font-size:12px;font-weight:600;margin-top:15px;color:#555}
+.legend-box{display:inline-block;width:12px;height:12px;margin-right:6px;border-radius:2px}
+
+/* Modals */
+.modal-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(18,53,91,0.6);display:none;justify-content:center;align-items:center;z-index:1000}
+.modal-card{background:#fff;width:90%;max-width:500px;border-radius:16px;padding:24px;box-shadow:0 10px 30px rgba(0,0,0,0.25)}
+.modal-header{display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid #edf0f5;padding-bottom:12px;margin-bottom:16px}
+.modal-header h3{margin:0;color:var(--navy);font-size:20px}
+.modal-close{background:none;border:none;font-size:22px;cursor:pointer;color:var(--muted)}
+.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+.detail-item{background:#f8fafc;padding:10px 14px;border-radius:8px;border:1px solid #e2e8f0}
+.detail-item strong{display:block;font-size:11px;color:var(--muted);text-transform:uppercase}
+.detail-item span{font-size:15px;color:var(--navy);font-weight:600}
+
+/* Form Controls */
+.form-group{margin-bottom:14px}
+.form-group label{display:block;font-size:12px;font-weight:bold;margin-bottom:6px;color:var(--navy)}
+.form-group input,.form-group select{width:100%;padding:10px;border:1px solid #cbd5e1;border-radius:8px;font-size:14px;outline:none}
+.login-btn{width:100%;background:var(--navy);color:#fff;padding:12px;border:none;border-radius:8px;font-weight:bold;cursor:pointer;margin-top:10px;font-size:14px}
+
+.footer{text-align:center;color:var(--muted);padding:25px}
+@media(max-width:800px){header{flex-direction:column;align-items:flex-start}.grid2{grid-template-columns:1fr}.container{padding:12px}.detail-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1 id="deptName">BIET – Department of Computer Science & Engineering</h1>
+    <p id="headerInfo">Academic Year 2026–27 | HOD: <span id="hodName">Not Specified</span></p>
+  </div>
+  <div class="actions">
+    <button class="btn-pdf" onclick="exportToPDF()">📄 Export PDF Report</button>
+    <button onclick="promptLogin()">🔒 Switch Role / Login</button>
+    <label class="file-label">📊 Load Excel <input id="excelFile" type="file" accept=".xlsx,.xls,.csv"></label>
+    <button onclick="refreshExcelData()">↻ Refresh Data</button>
+    <button onclick="clearExcelCache()" style="background: var(--red); color:#fff;">🗑️ Clear Cache</button>
+  </div>
+</header>
+
+<div class="user-banner">
+  <div>Logged in as: <strong id="userRoleTitle">HOD / Department Administrator</strong></div>
+  <div>Access Level: <span class="user-badge" id="userBadge">FULL ACCESS</span> <button class="logout-btn" onclick="logoutUser()">Logout</button></div>
+</div>
+
+<div class="container">
+
+<!-- GLOBAL FILTER BAR -->
+<div class="filter-card">
+  <div class="filter-group" style="flex: 2;">
+    <label>Global Search Query</label>
+    <input type="text" id="globalSearch" placeholder="Search by USN, Name, Lab, Course Code..." oninput="updateDashboard()">
+  </div>
+  <div class="filter-group">
+    <label>Student Year Filter</label>
+    <select id="filterYear" onchange="updateDashboard()">
+      <option value="">All Academic Years</option>
+      <option value="1">1st Year</option>
+      <option value="2">2nd Year</option>
+      <option value="3">3rd Year</option>
+      <option value="4">4th Year</option>
+    </select>
+  </div>
+  <div class="filter-group">
+    <label>Gender Filter</label>
+    <select id="filterGender" onchange="updateDashboard()">
+      <option value="">All Genders</option>
+      <option value="Male">Male</option>
+      <option value="Female">Female</option>
+    </select>
+  </div>
+  <div class="filter-group">
+    <label>Faculty Designation</label>
+    <select id="filterDesignation" onchange="updateDashboard()">
+      <option value="">All Designations</option>
+      <option value="Professor">Professor</option>
+      <option value="Associate Professor">Associate Professor</option>
+      <option value="Assistant Professor">Assistant Professor</option>
+    </select>
+  </div>
+</div>
+
+<!-- NAVIGATION MENU BUTTONS -->
+<div class="nav">
+  <button class="nav-btn active" onclick="switchTab('overview')">Overview</button>
+  <button class="nav-btn" onclick="switchTab('faculty')" id="tab-faculty">Faculty</button>
+  <button class="nav-btn" onclick="switchTab('students')" id="tab-students">Students</button>
+  <button class="nav-btn" onclick="switchTab('academics')">Academics</button>
+  <button class="nav-btn" onclick="switchTab('placement')">Placement & Training</button>
+  <button class="nav-btn" onclick="switchTab('activities')">Activities & Projects</button>
+  <button class="nav-btn" onclick="switchTab('infrastructure')">Infrastructure</button>
+  <button class="nav-btn" onclick="switchTab('data')" id="tab-data">Excel Data Preview</button>
+</div>
+
+<!-- OVERVIEW SECTION -->
+<section id="overview" class="section active">
+<div class="section-title"><h2>360° Department Navigation</h2></div>
+<div class="grid-360">
+  <div class="card-360" onclick="switchTab('faculty')">
+    <div class="icon">👨‍🏫</div>
+    <div class="title">Faculty</div>
+    <div class="subtitle"><span id="k360Faculty">0</span> Members</div>
+  </div>
+  <div class="card-360" onclick="switchTab('students')">
+    <div class="icon">🎓</div>
+    <div class="title">Students</div>
+    <div class="subtitle"><span id="k360Students">0</span> Enrolled</div>
+  </div>
+  <div class="card-360" onclick="switchTab('academics')">
+    <div class="icon">📚</div>
+    <div class="title">Academics</div>
+    <div class="subtitle">Courses & Schedules</div>
+  </div>
+  <div class="card-360" onclick="switchTab('placement')">
+    <div class="icon">💼</div>
+    <div class="title">Placements</div>
+    <div class="subtitle">Offers & Companies</div>
+  </div>
+  <div class="card-360" onclick="switchTab('activities')">
+    <div class="icon">🏆</div>
+    <div class="title">Activities</div>
+    <div class="subtitle">Events & Projects</div>
+  </div>
+  <div class="card-360" onclick="switchTab('infrastructure')">
+    <div class="icon">🏫</div>
+    <div class="title">Infrastructure</div>
+    <div class="subtitle">Labs & Facilities</div>
+  </div>
+</div>
+
+<div class="section-title"><h2>Key Department Summary</h2></div>
+<div class="kpis">
+<div class="kpi"><div class="label">Total Students</div><div class="value" id="kStudents">0</div><small>Current Enrolled</small></div>
+<div class="kpi"><div class="label">Total Faculty</div><div class="value" id="kFaculty">0</div><small>Teaching Staff</small></div>
+<div class="kpi"><div class="label">Average Attendance</div><div class="value" id="kAttendance">87%</div><small>Academic Year</small></div>
+<div class="kpi"><div class="label">Pass Percentage</div><div class="value" id="kPass">92%</div><small>Latest Results</small></div>
+<div class="kpi"><div class="label">Placement Rate</div><div class="value" id="kPlacement">82%</div><small>Eligible Students</small></div>
+</div>
+<div class="grid2">
+<div class="card"><h3>Year-wise Student Breakdown</h3><div class="chartbox"><canvas id="yearChart"></canvas></div></div>
+<div class="card"><h3>Department Metrics Overview</h3><div class="chartbox"><canvas id="perfChart"></canvas></div></div>
+</div>
+</section>
+
+<!-- FACULTY SECTION -->
+<section id="faculty" class="section">
+<div class="section-title"><h2>Faculty Details & Directory</h2></div>
+<div class="kpis">
+<div class="kpi"><div class="label">Total Faculty</div><div class="value" id="fTotal">0</div></div>
+<div class="kpi"><div class="label">Publications</div><div class="value" id="fPub">0</div></div>
+<div class="kpi"><div class="label">FDP / Workshops</div><div class="value" id="fFdp">0</div></div>
+</div>
+<div class="grid2">
+<div class="card"><h3>Designation Distribution</h3><div class="chartbox"><canvas id="designationChart"></canvas></div></div>
+<div class="card"><h3>Workload (Hours/Week)</h3><div class="chartbox"><canvas id="workloadChart"></canvas></div></div>
+</div>
+<div class="card" style="margin-top:16px">
+  <h3>Complete Faculty Directory <small style="font-size:12px; font-weight:normal; color:var(--muted);">(Click any row to view full details)</small></h3>
+  <div id="facultyTable" class="table-wrap"></div>
+</div>
+</section>
+
+<!-- STUDENTS SECTION -->
+<section id="students" class="section">
+<div class="section-title"><h2>Student Statistics & Details</h2></div>
+<div class="kpis">
+<div class="kpi"><div class="label">Total Students</div><div class="value" id="sTotal">0</div></div>
+<div class="kpi"><div class="label">1st Year</div><div class="value" id="s1">0</div></div>
+<div class="kpi"><div class="label">2nd Year</div><div class="value" id="s2">0</div></div>
+<div class="kpi"><div class="label">3rd Year</div><div class="value" id="s3">0</div></div>
+<div class="kpi"><div class="label">4th Year</div><div class="value" id="s4">0</div></div>
+<div class="kpi" style="border-left-color: var(--orange)"><div class="label">Gender Ratio</div><div class="value" id="sGenderRatio">0M / 0F</div><small>Male vs Female</small></div>
+</div>
+<div class="card" style="margin-top:16px">
+  <h3>Complete Student Records <small style="font-size:12px; font-weight:normal; color:var(--muted);">(Click any row to view detailed record profile)</small></h3>
+  <div id="studentTable" class="table-wrap"></div>
+</div>
+</section>
+
+<!-- ACADEMICS SECTION -->
+<section id="academics" class="section">
+<div class="section-title"><h2>Academic Information</h2></div>
+<div class="grid2">
+  <div class="card"><h3>Courses Offered</h3><div id="courseTable" class="table-wrap"></div></div>
+  <div class="card"><h3>Academic Calendar</h3><div id="calendarList">Load Excel to view calendar.</div></div>
+</div>
+<div class="card" style="margin-top:16px">
+  <h3>Department Timetable</h3>
+  <div id="timetableTable" class="table-wrap"></div>
+</div>
+</section>
+
+<!-- PLACEMENT SECTION -->
+<section id="placement" class="section">
+  <div class="section-title"><h2>Placement</h2></div>
+  
+  <div class="card" style="margin-bottom: 20px;">
+    <div class="placement-header">
+      <div style="font-style: italic; font-family: serif; font-size: 15px; color: #222;">Placed per year</div>
+      <div>COMPUTER SCIENCE & ENGINEERING &nbsp;•&nbsp; SOURCE: DEPARTMENT RECORD</div>
+    </div>
+    
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+      <span style="font-size: 11px; font-weight: bold; letter-spacing: 1px; color: #333;">PLACED</span>
+      <span style="font-size: 13px; font-weight: bold; color: #333;" id="placementYearRange">—</span>
+    </div>
+
+    <!-- Chart Container -->
+    <div class="chartbox" style="height: 320px;">
+      <canvas id="placementBarChart"></canvas>
+    </div>
+
+    <div class="placement-legend">
+      <span><span class="legend-box" style="background: #111e38;"></span>IN-CAMPUS</span>
+      <span><span class="legend-box" style="background: #b58d3d;"></span>OFF-CAMPUS</span>
+    </div>
+  </div>
+
+  <!-- Detailed Table -->
+  <div class="card">
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>YEAR</th>
+            <th>COMPANIES</th>
+            <th>PLACED - IN-CAMPUS</th>
+            <th>PLACED - OFF-CAMPUS</th>
+            <th>TOTAL</th>
+            <th>HIGHEST PACKAGE</th>
+          </tr>
+        </thead>
+        <tbody id="placementTableBody">
+          <!-- Populated dynamically from Excel -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ACTIVITIES SECTION -->
+<section id="activities" class="section">
+<div class="section-title"><h2>Department Activities & Student Projects</h2></div>
+<div class="grid2">
+  <div class="card"><h3>Student Projects</h3><div id="projectTable" class="table-wrap"></div></div>
+  <div class="card"><h3>Department Events</h3><div id="activityTable" class="table-wrap"></div></div>
+</div>
+</section>
+
+<!-- INFRASTRUCTURE SECTION -->
+<section id="infrastructure" class="section">
+  <div class="section-title"><h2>Infrastructure & Labs Overview</h2></div>
+  <div class="kpis" style="margin-bottom: 16px;">
+    <div class="kpi">
+      <div class="label">Total Facilities / Labs</div>
+      <div class="value" id="infraTotalCount">0</div>
+      <small>Registered Items</small>
+    </div>
+    <div class="kpi" style="border-left-color: var(--green);">
+      <div class="label">Working / Operational</div>
+      <div class="value" id="infraActiveCount">0</div>
+      <small>Available Status</small>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Infrastructure Inventory <small style="font-size:12px; font-weight:normal; color:var(--muted);">(Click any row to view full specifications)</small></h3>
+    <div id="infraTable" class="table-wrap"></div>
+  </div>
+</section>
+
+<!-- EXCEL DATA PREVIEW -->
+<section id="data" class="section">
+<div class="section-title"><h2>Raw Data Preview</h2></div>
+<div class="table-wrap"><div id="dataPreview" style="padding:18px">Load an Excel file to preview data.</div></div>
+</section>
+
+</div>
+
+<!-- DETAILED ITEM POPUP MODAL -->
+<div id="detailModal" class="modal-overlay">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h3 id="modalTitle">Entity Details</h3>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div id="modalBody" class="detail-grid"></div>
+  </div>
+</div>
+
+<!-- AUTHENTICATION MODAL -->
+<div id="loginModal" class="modal-overlay">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h3>🔑 Portal Authentication</h3>
+      <button class="modal-close" onclick="closeLoginModal()">✕</button>
+    </div>
+    <form onsubmit="handleLogin(event)">
+      <div class="form-group">
+        <label>Select Access Role</label>
+        <select id="loginRoleSelect">
+          <option value="HOD">HOD / Admin</option>
+          <option value="Faculty">Faculty Member</option>
+          <option value="Student">Student</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Username</label>
+        <input type="text" id="loginUsername" placeholder="Enter username (e.g. hod, faculty, student)" required>
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="loginPassword" placeholder="Enter password (e.g. 123)" required>
+      </div>
+      <button type="submit" class="login-btn">Authenticate Session</button>
+    </form>
+  </div>
+</div>
+
+<div class="footer">BIET CSE Department 360° Interactive Portal</div>
+
+<script>
+let DATA = {}; 
+let charts = {}; 
+let currentRole = 'HOD';
+
+// Default Placement Data
+const defaultPlacementData = [];
+
+function formatDate(val) {
+  if (val === null || val === undefined || val === '') return '—';
+  
+  if (val instanceof Date) {
+    return isNaN(val.getTime()) ? '—' : val.toISOString().split('T')[0];
+  }
+  
+  if (typeof val === 'number' && val > 25569 && val < 60000) {
+    const jsDate = new Date((val - (25567 + 2)) * 86400 * 1000);
+    return jsDate.toISOString().split('T')[0];
+  }
+  
+  return String(val);
+}
+
+function switchTab(targetId) {
+  const buttons = document.querySelectorAll('.nav-btn');
+  buttons.forEach(btn => btn.classList.remove('active'));
+
+  const sections = document.querySelectorAll('.section');
+  sections.forEach(sec => sec.classList.remove('active'));
+
+  const selectedBtn = Array.from(buttons).find(b => b.getAttribute('onclick') && b.getAttribute('onclick').includes(targetId));
+  if (selectedBtn) {
+    selectedBtn.classList.add('active');
+  }
+
+  const targetSection = document.getElementById(targetId);
+  if (targetSection) {
+    targetSection.classList.add('active');
+  }
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+  const role = localStorage.getItem('userRole') || 'HOD';
+  const name = localStorage.getItem('userName') || 'HOD / Department Administrator';
+  applyUserSession({ role, name });
+
+  // Auto-restore stored Excel data when refreshing or opening page
+  loadSavedExcelData();
+});
+
+function saveExcelToStorage(data) {
+  try {
+    localStorage.setItem('biet_excel_backup', JSON.stringify(data));
+  } catch (err) {
+    console.warn("Storage quota exceeded or storage unavailable:", err);
+  }
+}
+
+function loadSavedExcelData() {
+  const savedData = localStorage.getItem('biet_excel_backup');
+  if (savedData) {
+    try {
+      DATA = JSON.parse(savedData);
+      updateDashboard();
+    } catch (e) {
+      console.error("Failed to parse saved Excel backup", e);
+    }
+  }
+}
+
+function refreshExcelData() {
+  const savedData = localStorage.getItem('biet_excel_backup');
+  if (!savedData) {
+    alert("No stored Excel data found. Please upload an Excel file first using 'Load Excel'.");
+    return;
+  }
+  loadSavedExcelData();
+  alert("Data successfully restored and refreshed!");
+}
+
+function clearExcelCache() {
+  if (confirm("Are you sure you want to clear the saved Excel data backup?")) {
+    localStorage.removeItem('biet_excel_backup');
+    DATA = {};
+    updateDashboard();
+    alert("Excel backup cleared.");
+  }
+}
+
+function promptLogin(){ document.getElementById('loginModal').style.display = 'flex'; }
+function closeLoginModal(){ document.getElementById('loginModal').style.display = 'none'; }
+
+function handleLogin(e) {
+  e.preventDefault();
+
+  const selectedRole = document.getElementById('loginRoleSelect').value;
+  const username = document.getElementById('loginUsername').value.trim().toLowerCase();
+  const password = document.getElementById('loginPassword').value.trim();
+
+  const credentials = {
+    'hod': { password: '123', role: 'HOD', name: 'Dr. Nirmala C R (HOD)' },
+    'faculty': { password: '123', role: 'Faculty', name: 'Faculty Member' },
+    'student': { password: '123', role: 'Student', name: 'Student User' }
+  };
+
+  const user = credentials[username];
+
+  if (!user || user.password !== password || user.role !== selectedRole) {
+    alert('Invalid credentials! Try logging in as:\n- HOD: hod / 123\n- Faculty: faculty / 123\n- Student: student / 123');
+    return;
+  }
+
+  localStorage.setItem('userRole', user.role);
+  localStorage.setItem('userName', user.name);
+
+  applyUserSession(user);
+  closeLoginModal();
+}
+
+function applyUserSession(user) {
+  currentRole = user.role;
+  document.getElementById('userRoleTitle').textContent = user.name || user.role;
+  document.getElementById('userBadge').textContent = `${user.role} ACCESS`;
+
+  const dataTab = document.getElementById('tab-data');
+  if (currentRole === 'Student' && dataTab) {
+    dataTab.style.display = 'none';
+  } else if (dataTab) {
+    dataTab.style.display = 'inline-block';
+  }
+
+  updateDashboard();
+}
+
+function logoutUser() {
+  localStorage.removeItem('userRole');
+  localStorage.removeItem('userName');
+  applyUserSession({ role: 'Guest', name: 'Guest User' });
+  alert('Logged out successfully.');
+}
+
+function val(v, fallback=0){const n=Number(v);return isNaN(n)?fallback:n}
+function unique(a){return [...new Set(a.filter(x=>x!==undefined&&x!==''))]}
+
+function getProp(obj, ...possibleKeys) {
+  if (!obj) return '';
+  const objKeys = Object.keys(obj);
+  for (let key of possibleKeys) {
+    const foundKey = objKeys.find(k => k.trim().toLowerCase() === key.trim().toLowerCase());
+    if (foundKey && obj[foundKey] !== undefined) return obj[foundKey];
+  }
+  return '';
+}
+
+function updateHODHeader() {
+  const hodEl = document.getElementById('hodName');
+  if (!hodEl) return;
+
+  let foundHOD = '';
+  const searchSheets = DATA.Overview ? [DATA.Overview, ...Object.values(DATA)] : Object.values(DATA);
+
+  for (let sheet of searchSheets) {
+    if (Array.isArray(sheet) && sheet.length > 0) {
+      for (let row of sheet) {
+        const val = getProp(row, 'HOD Name', 'HOD', 'Head of Department', 'HOD Details');
+        if (val) {
+          foundHOD = val;
+          break;
+        }
+      }
+    }
+    if (foundHOD) break;
+  }
+
+  hodEl.textContent = foundHOD ? foundHOD : 'Not Specified';
+}
+
+function draw(id,type,labels,data,options={}){
+ if(charts[id]) charts[id].destroy();
+ const el = document.getElementById(id);
+ if(!el) return;
+ charts[id]=new Chart(el,{
+   type,
+   data:{labels,datasets:[{label:options.label||'',data,backgroundColor:['#1e6bb8','#15946a','#ef9b2d','#d9534f','#12355b'],borderWidth:1}]},
+   options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:options.legend??false}},scales:type==='doughnut'?{}:{y:{beginAtZero:true}}}
+ });
+}
+
+function parseYear(v) {
+ if (!v) return '';
+ const str = String(v).toLowerCase().trim();
+ if (str.includes('1')) return '1';
+ if (str.includes('2')) return '2';
+ if (str.includes('3')) return '3';
+ if (str.includes('4')) return '4';
+ return '';
+}
+
+function getFilteredData(rows, type){
+ if(!rows) return [];
+ const search = (document.getElementById('globalSearch').value || '').toLowerCase().trim();
+ const yearFilter = document.getElementById('filterYear').value;
+ const genderFilter = document.getElementById('filterGender').value;
+ const desigFilter = document.getElementById('filterDesignation').value;
+
+ return rows.filter(r => {
+   const rowYear = parseYear(getProp(r, 'Year', 'Academic Year', 'Yr'));
+   const rowGender = String(getProp(r, 'Gender', 'Sex') || '').toLowerCase();
+   const rowDesig = String(getProp(r, 'Designation', 'Role', 'Title') || '');
+
+   const matchesSearch = !search || Object.values(r).some(v => String(v).toLowerCase().includes(search));
+   const matchesYear = !yearFilter || (type === 'Student' && rowYear === yearFilter);
+   const matchesGender = !genderFilter || (type === 'Student' && rowGender === genderFilter.toLowerCase());
+   const matchesDesig = !desigFilter || (type === 'Faculty' && rowDesig.toLowerCase().includes(desigFilter.toLowerCase()));
+
+   return matchesSearch && matchesYear && matchesGender && matchesDesig;
+ });
+}
+
+function processPlacementExcelData(rawData) {
+  if (!rawData || !rawData.length) return defaultPlacementData;
+
+  const firstRow = rawData[0];
+  const isSummaryFormat = getProp(firstRow, 'In-Campus', 'Placed - In-Campus', 'Companies') !== '';
+
+  if (isSummaryFormat) {
+    return rawData.map(r => ({
+      year: String(getProp(r, 'Year', 'Placement Year')),
+      companies: val(getProp(r, 'Companies')),
+      inCampus: val(getProp(r, 'Placed - In-Campus', 'In-Campus', 'Placed In-Campus')),
+      offCampus: val(getProp(r, 'Placed - Off-Campus', 'Off-Campus', 'Placed Off-Campus')),
+      total: val(getProp(r, 'Total')) || (val(getProp(r, 'Placed - In-Campus')) + val(getProp(r, 'Placed - Off-Campus'))),
+      highest: String(getProp(r, 'Highest Package', 'Highest', 'Package'))
+    }));
+  } else {
+    const groups = {};
+    rawData.forEach(r => {
+      const yr = String(getProp(r, 'Placement Year', 'Year') || '2026');
+      if (!groups[yr]) {
+        groups[yr] = { year: yr, companies: new Set(), inCampus: 0, offCampus: 0, total: 0, maxPkg: 0 };
+      }
+      const comp = getProp(r, 'Company');
+      if (comp) groups[yr].companies.add(comp);
+      
+      const pkg = parseFloat(getProp(r, 'Package (LPA)', 'Package', 'LPA')) || 0;
+      if (pkg > groups[yr].maxPkg) groups[yr].maxPkg = pkg;
+
+      const type = String(getProp(r, 'Type', 'Campus Type')).toLowerCase();
+      if (type.includes('off')) groups[yr].offCampus++;
+      else groups[yr].inCampus++;
+      
+      groups[yr].total++;
+    });
+
+    return Object.values(groups).map(g => ({
+      year: g.year,
+      companies: g.companies.size || 10,
+      inCampus: g.inCampus,
+      offCampus: g.offCampus,
+      total: g.total,
+      highest: g.maxPkg ? `${g.maxPkg} LPA` : '10 LPA'
+    })).sort((a,b) => b.year - a.year);
+  }
+}
+
+function renderPlacementSection() {
+  const pData = (DATA.Placement && DATA.Placement.length > 0) 
+    ? processPlacementExcelData(DATA.Placement) 
+    : defaultPlacementData;
+
+  const tbody = document.getElementById('placementTableBody');
+  const yearRangeEl = document.getElementById('placementYearRange');
+
+  if (!pData || pData.length === 0) {
+    if (tbody) {
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="6" style="text-align: center; padding: 30px; color: var(--muted); font-size: 14px;">
+            📁 <strong>No Placement Data Available</strong><br>
+            Please upload an Excel file containing a Placement sheet to view charts and statistics.
+          </td>
+        </tr>
+      `;
+    }
+    
+    if (yearRangeEl) yearRangeEl.textContent = '—';
+
+    if (charts['placementBarChart']) {
+      charts['placementBarChart'].destroy();
+      delete charts['placementBarChart'];
+    }
+    return;
+  }
+
+  const displayTableData = [...pData].sort((a,b) => b.year - a.year);
+  tbody.innerHTML = displayTableData.map(r => `
+    <tr>
+      <td><strong>${r.year}</strong></td>
+      <td>${r.companies}</td>
+      <td>${r.inCampus}</td>
+      <td>${r.offCampus}</td>
+      <td><strong>${r.total}</strong></td>
+      <td><strong>${r.highest}</strong></td>
+    </tr>
+  `).join('');
+
+  const years = displayTableData.map(r => parseInt(r.year)).filter(y => !isNaN(y));
+  if (years.length) {
+    yearRangeEl.textContent = `${Math.min(...years)} – ${Math.max(...years)}`;
+  }
+
+  const chartData = [...pData].sort((a,b) => a.year - b.year);
+  const labels = chartData.map(r => r.year);
+  const inCampusValues = chartData.map(r => r.inCampus);
+  const offCampusValues = chartData.map(r => r.offCampus);
+  const highestPackages = chartData.map(r => r.highest);
+
+  if (charts['placementBarChart']) charts['placementBarChart'].destroy();
+
+  const ctx = document.getElementById('placementBarChart');
+  if (!ctx) return;
+
+  charts['placementBarChart'] = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: labels,
+      datasets: [
+        {
+          label: 'In-Campus',
+          data: inCampusValues,
+          backgroundColor: '#111e38',
+          barThickness: 45
+        },
+        {
+          label: 'Off-Campus',
+          data: offCampusValues,
+          backgroundColor: '#b58d3d',
+          barThickness: 45
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            footer: (items) => `Highest: ${highestPackages[items[0].dataIndex] || ''}`
+          }
+        }
+      },
+      scales: {
+        x: {
+          stacked: true,
+          grid: { display: false },
+          ticks: {
+            font: { weight: 'bold', size: 12 },
+            callback: function(value, index) {
+              return [this.getLabelForValue(value), highestPackages[index] || ''];
+            }
+          }
+        },
+        y: {
+          stacked: true,
+          ticks: { stepSize: 50 }
+        }
+      }
+    }
+  });
+}
+
+function renderCalendarSection() {
+  const calContainer = document.getElementById('calendarList');
+  if (!calContainer) return;
+
+  let calData = DATA.Calendar;
+  if (!calData) {
+    const key = Object.keys(DATA).find(k => k.toLowerCase().includes('calendar') || k.toLowerCase().includes('academic'));
+    if (key) calData = DATA[key];
+  }
+
+  if (!calData || calData.length === 0) {
+    calContainer.innerHTML = '<p style="padding:12px;color:var(--muted);">No academic calendar data found in uploaded Excel.</p>';
+    return;
+  }
+
+  const filteredCal = getFilteredData(calData, 'Calendar');
+  calContainer.innerHTML = makeTable(filteredCal, 'Calendar');
+}
+
+function updateDashboard(){
+ updateHODHeader();
+
+ const st = getFilteredData(DATA.Students || [], 'Student');
+ const fac = getFilteredData(DATA.Faculty || [], 'Faculty');
+ const act = getFilteredData(DATA.Activities || [], 'Activity');
+ const proj = getFilteredData(DATA.Projects || [], 'Project');
+ const courses = getFilteredData(DATA.Courses || [], 'Course');
+ const tt = getFilteredData(DATA.Timetable || [], 'Timetable');
+ const infra = getFilteredData(DATA.Infrastructure || [], 'Infrastructure');
+
+ document.getElementById('kStudents').textContent = st.length;
+ document.getElementById('k360Students').textContent = st.length;
+ document.getElementById('sTotal').textContent = st.length;
+
+ const countY1 = st.filter(r => parseYear(getProp(r, 'Year', 'Academic Year')) === '1').length;
+ const countY2 = st.filter(r => parseYear(getProp(r, 'Year', 'Academic Year')) === '2').length;
+ const countY3 = st.filter(r => parseYear(getProp(r, 'Year', 'Academic Year')) === '3').length;
+ const countY4 = st.filter(r => parseYear(getProp(r, 'Year', 'Academic Year')) === '4').length;
+
+ const countMale = st.filter(r => String(getProp(r, 'Gender', 'Sex')).toLowerCase() === 'male').length;
+ const countFemale = st.filter(r => String(getProp(r, 'Gender', 'Sex')).toLowerCase() === 'female').length;
+
+ document.getElementById('s1').textContent = countY1;
+ document.getElementById('s2').textContent = countY2;
+ document.getElementById('s3').textContent = countY3;
+ document.getElementById('s4').textContent = countY4;
+ document.getElementById('sGenderRatio').textContent = `${countMale}M / ${countFemale}F`;
+
+ document.getElementById('kFaculty').textContent = fac.length; 
+ document.getElementById('k360Faculty').textContent = fac.length;
+ document.getElementById('fTotal').textContent = fac.length;
+
+ const fPub = fac.reduce((s,r) => s + val(getProp(r, 'Publications', 'Pubs')), 0);
+ const fFdp = fac.reduce((s,r) => s + val(getProp(r, 'FDP/Workshops Attended', 'FDP', 'Workshops')), 0);
+ document.getElementById('fPub').textContent = fPub;
+ document.getElementById('fFdp').textContent = fFdp;
+
+ draw('yearChart', 'bar', ['1st Year', '2nd Year', '3rd Year', '4th Year'], [countY1, countY2, countY3, countY4], {label: 'Students'});
+ draw('perfChart', 'bar', ['Attendance', 'Pass %', 'Placement %'], [87, 92, 82], {label: 'Percentage'});
+
+ const des = unique(fac.map(r => getProp(r, 'Designation', 'Role')));
+ draw('designationChart', 'doughnut', des.length ? des : ['Faculty'], des.length ? des.map(d => fac.filter(r => getProp(r, 'Designation', 'Role') === d).length) : [fac.length], {legend: true});
+
+ const workload = fac.slice(0, 10);
+ draw('workloadChart', 'bar', workload.map(r => getProp(r, 'Faculty Name', 'Name') || 'Faculty'), workload.map(r => val(getProp(r, 'Workload (Hours/Week)', 'Workload'))), {label: 'Hours/Week'});
+
+ document.getElementById('infraTotalCount').textContent = infra.length;
+ const activeInfra = infra.filter(r => {
+   const status = String(getProp(r, 'Status', 'Condition', 'Operational Status', 'Availability')).toLowerCase();
+   return status.includes('working') || status.includes('active') || status.includes('good') || status.includes('available') || status.includes('ok');
+ });
+ document.getElementById('infraActiveCount').textContent = activeInfra.length;
+
+ document.getElementById('facultyTable').innerHTML = makeTable(fac, 'Faculty');
+ document.getElementById('studentTable').innerHTML = makeTable(st, 'Student');
+ document.getElementById('courseTable').innerHTML = makeTable(courses, 'Course');
+ document.getElementById('timetableTable').innerHTML = makeTable(tt, 'Timetable');
+ document.getElementById('projectTable').innerHTML = makeTable(proj, 'Project');
+ document.getElementById('activityTable').innerHTML = makeTable(act, 'Activity');
+ document.getElementById('infraTable').innerHTML = makeTable(infra, 'Infrastructure');
+
+ renderPlacementSection();
+ renderCalendarSection();
+ 
+ let previewRows = DATA.Students || [];
+ if (!previewRows.length && Object.keys(DATA).length > 0) {
+   previewRows = DATA[Object.keys(DATA)[0]];
+ }
+ document.getElementById('dataPreview').innerHTML = makeTable(previewRows.slice(0, 20), 'Preview');
+}
+
+function makeTable(rows, type){
+ if(!rows || !rows.length) return '<p style="padding:12px;color:#667085;">No records found or loaded.</p>';
+ const cols = Object.keys(rows[0]);
+ return '<table><thead><tr>' + cols.map(c => `<th>${c}</th>`).join('') + '</tr></thead><tbody>' + 
+        rows.map((r, idx) => `<tr class="clickable-row" onclick="openDetail('${type}', ${idx})">` + 
+          cols.map(c => {
+            let val = r[c];
+            if (c.toLowerCase().includes('date') || (typeof val === 'number' && val > 25569 && val < 60000)) {
+              val = formatDate(val);
+            }
+            return `<td>${val !== undefined && val !== '' ? val : '—'}</td>`;
+          }).join('') + 
+        '</tr>').join('') + 
+        '</tbody></table>';
+}
+
+function exportToPDF(){
+ const { jsPDF } = window.jspdf;
+ const doc = new jsPDF();
+
+ doc.setFontSize(16);
+ doc.setTextColor(18, 53, 91);
+ doc.text("Bapuji Institute of Engineering & Technology", 14, 15);
+ doc.setFontSize(12);
+ doc.setTextColor(100);
+ doc.text("Department of Computer Science & Engineering - Summary Report", 14, 22);
+ doc.text("Generated Date: " + new Date().toLocaleDateString(), 14, 28);
+ doc.setLineWidth(0.5);
+ doc.line(14, 32, 196, 32);
+
+ const st = getFilteredData(DATA.Students || [], 'Student');
+ const fac = getFilteredData(DATA.Faculty || [], 'Faculty');
+
+ doc.setFontSize(14);
+ doc.setTextColor(18, 53, 91);
+ doc.text("1. Department Statistics Overview", 14, 42);
+
+ const summaryData = [
+   ["Total Enrolled Students", st.length],
+   ["Total Teaching Staff", fac.length],
+   ["Average Department Attendance", "87%"],
+   ["Overall Pass Percentage", "92%"]
+ ];
+
+ doc.autoTable({
+   startY: 46,
+   head: [['Metric / Key Performance Indicator', 'Value']],
+   body: summaryData,
+   theme: 'grid',
+   headStyles: { fillColor: [18, 53, 91] }
+ });
+
+ doc.save("BIET_CSE_Department_Report.pdf");
+}
+
+function openDetail(type, idx){
+ let dataset = [];
+ if(type === 'Faculty') dataset = getFilteredData(DATA.Faculty || [], 'Faculty');
+ else if(type === 'Student') dataset = getFilteredData(DATA.Students || [], 'Student');
+ else if(type === 'Infrastructure') dataset = getFilteredData(DATA.Infrastructure || [], 'Infrastructure');
+ else if(type === 'Placement') dataset = DATA.Placement || defaultPlacementData;
+ else if(type === 'Project') dataset = getFilteredData(DATA.Projects || [], 'Project');
+ else if(type === 'Activity') dataset = getFilteredData(DATA.Activities || [], 'Activity');
+ else if(type === 'Calendar') dataset = getFilteredData(DATA.Calendar || [], 'Calendar');
+ else dataset = DATA.Students || DATA[Object.keys(DATA)[0]] || [];
+
+ const item = dataset[idx];
+ if(!item) return;
+
+ document.getElementById('modalTitle').textContent = `${type} Details`;
+ const body = document.getElementById('modalBody');
+ body.innerHTML = Object.entries(item).map(([k,v]) => {
+   let val = v;
+   if (k.toLowerCase().includes('date') || (typeof val === 'number' && val > 25569 && val < 60000)) {
+     val = formatDate(val);
+   }
+   return `
+     <div class="detail-item">
+       <strong>${k}</strong>
+       <span>${val !== undefined && val !== '' ? val : '—'}</span>
+     </div>
+   `;
+ }).join('');
+
+ document.getElementById('detailModal').style.display = 'flex';
+}
+
+function closeModal(){ document.getElementById('detailModal').style.display = 'none'; }
+
+document.getElementById('excelFile').addEventListener('change', e => {
+ const file = e.target.files[0]; 
+ if(!file) return;
+
+ const reader = new FileReader();
+ reader.onload = evt => {
+  try {
+    const wb = XLSX.read(new Uint8Array(evt.target.result), {
+      type: 'array',
+      cellDates: true,
+      dateNF: 'yyyy-mm-dd'
+    });
+    DATA = {}; 
+    
+    wb.SheetNames.forEach(name => {
+      const cleanName = name.trim().toLowerCase();
+      const sheetData = XLSX.utils.sheet_to_json(wb.Sheets[name], {defval: '', raw: false});
+      
+      if (cleanName.includes('student')) DATA.Students = sheetData;
+      else if (cleanName.includes('faculty') || cleanName.includes('staff')) DATA.Faculty = sheetData;
+      else if (cleanName.includes('place') || cleanName.includes('job')) DATA.Placement = sheetData;
+      else if (cleanName.includes('activity') || cleanName.includes('event')) DATA.Activities = sheetData;
+      else if (cleanName.includes('project')) DATA.Projects = sheetData;
+      else if (cleanName.includes('course') || cleanName.includes('subject')) DATA.Courses = sheetData;
+      else if (cleanName.includes('time') || cleanName.includes('schedule')) DATA.Timetable = sheetData;
+      else if (cleanName.includes('infra') || cleanName.includes('lab') || cleanName.includes('facility')) DATA.Infrastructure = sheetData;
+      else if (cleanName.includes('calendar') || cleanName.includes('academic')) DATA.Calendar = sheetData;
+      
+      DATA[name] = sheetData;
+    });
+
+    if (!DATA.Students && wb.SheetNames.length > 0) {
+      DATA.Students = DATA[wb.SheetNames[0]];
+    }
+
+    saveExcelToStorage(DATA);
+
+    updateDashboard(); 
+    alert(`Excel parsed and backed up successfully! Loaded ${wb.SheetNames.length} tab(s).`);
+  } catch (err) {
+    alert("Error reading Excel file: " + err.message);
+  }
+ };
+
+ reader.onerror = () => alert("Failed to read the file!");
+ reader.readAsArrayBuffer(file);
+});
+</script>
+</body>
+</html>
